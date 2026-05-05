@@ -1,0 +1,43 @@
+@import 'tailwindcss';
+@import 'preline/variants.css';
+@source "../../node_modules/preline/dist/*.js";
+@plugin "@tailwindcss/forms";
+
+@theme {
+  --font-sans: 'Plus Jakarta Sans', 'Segoe UI', sans-serif;
+  --color-brand-50: #eefbf3;
+  --color-brand-100: #d8f5e2;
+  --color-brand-500: #1f9d55;
+  --color-brand-600: #177a42;
+  --color-brand-700: #125c33;
+  --color-ink-900: #102418;
+}
+
+@layer base {
+  button:not(:disabled),
+  [role='button']:not(:disabled) {
+    cursor: pointer;
+  }
+
+  html {
+    color: #102418;
+    background-color: #f5f7f2;
+  }
+
+  body {
+    min-height: 100vh;
+    background:
+      radial-gradient(circle at top, rgba(31, 157, 85, 0.16), transparent 30%),
+      linear-gradient(180deg, #f8fbf6 0%, #eef4ee 100%);
+  }
+
+  body::selection {
+    background-color: rgba(31, 157, 85, 0.2);
+  }
+
+  #app {
+    min-height: 100vh;
+  }
+}
+
+@custom-variant hover (&:hover);
