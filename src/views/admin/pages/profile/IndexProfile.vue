@@ -17,7 +17,6 @@ const form = reactive({
   username: currentUser?.username ?? '',
   name: currentUser?.name ?? '',
   lastname: currentUser?.lastname ?? '',
-  suspended: currentUser?.suspended ?? '0',
   email: currentUser?.email ?? '',
 })
 
@@ -77,7 +76,7 @@ async function handleSubmit() {
         <article class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
           <div class="mb-8">
             <h2 class="text-xl font-semibold text-slate-900">Dados cadastrais</h2>
-            <p class="mt-1 text-sm text-slate-500">Edite username, nome, sobrenome, e-mail e status de suspensao.</p>
+            <p class="mt-1 text-sm text-slate-500">Edite username, nome, sobrenome e e-mail.</p>
           </div>
 
           <form class="grid gap-5 sm:grid-cols-2" @submit.prevent="handleSubmit">
@@ -112,18 +111,6 @@ async function handleSubmit() {
                 autocomplete="family-name"
                 class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
               />
-            </div>
-
-            <div v-if="authStore.isMaster">
-              <label for="suspended" class="mb-2 block text-sm font-medium text-slate-700">Suspenso</label>
-              <select
-                id="suspended"
-                v-model="form.suspended"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
-              >
-                <option value="0">Nao</option>
-                <option value="1">Sim</option>
-              </select>
             </div>
 
             <div class="sm:col-span-2">

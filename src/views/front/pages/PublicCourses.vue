@@ -59,10 +59,12 @@ onMounted(() => {
 
       <div v-else-if="courses.length" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
         <article v-for="course in courses" :key="course.id" class="flex min-h-[260px] flex-col rounded-[2rem] border border-white bg-white p-6 shadow-lg shadow-slate-900/5">
+          <img v-if="course.imageUrl" :src="course.imageUrl" :alt="course.fullname" class="mb-5 h-40 w-full rounded-2xl object-cover" />
           <div class="flex-1">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">{{ course.category?.name || 'Curso' }}</p>
             <h2 class="mt-3 text-2xl font-semibold text-slate-900">{{ course.fullname }}</h2>
-            <p class="mt-3 line-clamp-4 text-sm leading-6 text-slate-600">{{ course.summary || 'Cadastro aberto para novos alunos.' }}</p>
+            <div v-if="course.summary" class="mt-3 line-clamp-4 text-sm leading-6 text-slate-600 [&_a]:underline [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-5" v-html="course.summary" />
+            <p v-else class="mt-3 line-clamp-4 text-sm leading-6 text-slate-600">Cadastro aberto para novos alunos.</p>
           </div>
 
           <div class="mt-6 flex items-center justify-between gap-3">

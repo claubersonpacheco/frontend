@@ -1,15 +1,27 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
-import { useCoursesStore } from '@/stores/courses'
+import { RouterLink, useRoute } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useCoursesStore } from '@/stores/courses'
 
-const coursesStore = useCoursesStore()
+const route = useRoute()
 const authStore = useAuthStore()
+const coursesStore = useCoursesStore()
 const errorMessage = ref('')
 const isLoading = ref(false)
 const openingCourseId = ref<number | null>(null)
 
 const courseEnrollments = computed(() => coursesStore.myEnrollments)
+const highlightedEnrollmentId = computed(() =>
+  route.query.enrollment ? Number(route.query.enrollment) : null,
+)
+
+function formatCurrency(value?: string | null) {
+  return Number(value || 0).toLocaleString('pt-BR', {
+    style: 'currency',
+    currency: 'BRL',
+  })
+}
 
 async function load() {
   errorMessage.value = ''
@@ -56,33 +68,43 @@ onMounted(() => {
 
     <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-    <article class="overflow-x-auto rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
-      <table v-if="courseEnrollments.length" class="min-w-full divide-y divide-slate-200">
-        <thead>
-          <tr class="text-left text-xs uppercase tracking-[0.18em] text-slate-400">
-            <th class="px-4 py-3">Curso</th>
-            <th class="px-4 py-3">Data de cadastro no curso</th>
-            <th class="px-4 py-3 text-right">Acesso</th>
-          </tr>
-        </thead>
-        <tbody class="divide-y divide-slate-100">
-          <tr v-for="enrollment in courseEnrollments" :key="enrollment.id" class="text-sm text-slate-700">
-            <td class="px-4 py-4">
-              <p class="font-semibold text-slate-900">{{ enrollment.course.fullname }}</p>
-            </td>
-            <td class="px-4 py-4">{{ new Date(enrollment.createdAt).toLocaleDateString('pt-BR') }}</td>
-            <td class="px-4 py-4 text-right">
-              <button type="button" class="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-70" :disabled="openingCourseId === enrollment.course.id" @click="openMoodle(enrollment.course.id)">
-                {{ openingCourseId === enrollment.course.id ? 'Abrindo...' : 'Entrar no Moodle' }}
-              </button>
-            </td>
-          </tr>
-        </tbody>
-      </table>
+    <article v-if="courseEnrollments.length" class="grid gap-4">
+      <section
+        v-for="enrollment in courseEnrollments"
+        :key="enrollment.id"
+        class="rounded-2xl border bg-white/90 p-5 shadow-lg shadow-slate-900/5 backdrop-blur"
+        :class="highlightedEnrollmentId === enrollment.id ? 'border-emerald-200 ring-4 ring-emerald-100' : 'border-white/70'"
+      >
+        <div class="flex flex-col gap-4 xl:flex-row xl:items-center xl:justify-between">
+          <div class="min-w-0">
+            <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">Curso</p>
+            <h2 class="mt-2 text-xl font-semibold text-slate-900">{{ enrollment.course.fullname }}</h2>
+            <div class="mt-2 flex flex-wrap gap-2 text-sm text-slate-500">
+              <span>Inscricao em {{ new Date(enrollment.createdAt).toLocaleDateString('pt-BR') }}</span>
+              <span v-if="enrollment.amountDue">Valor {{ formatCurrency(enrollment.amountDue) }}</span>
+              <span class="font-medium" :class="enrollment.status === 'active' ? 'text-emerald-700' : 'text-amber-700'">
+                {{ enrollment.status === 'active' ? 'Acesso liberado' : 'Pagamento pendente' }}
+              </span>
+            </div>
+          </div>
 
-      <p v-else class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
-        {{ isLoading ? 'Carregando seus cursos...' : 'Voce ainda nao esta matriculado em nenhum curso.' }}
-      </p>
+          <div class="flex flex-wrap gap-2">
+            <RouterLink :to="{ name: 'my-course-contract', params: { enrollmentId: enrollment.id } }" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand-200 hover:text-brand-700">
+              Contrato
+            </RouterLink>
+            <RouterLink :to="{ name: 'my-course-financial', params: { enrollmentId: enrollment.id } }" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-semibold text-slate-700 transition hover:border-brand-200 hover:text-brand-700">
+              Financeiro
+            </RouterLink>
+            <button v-if="enrollment.status === 'active'" type="button" class="rounded-xl bg-brand-600 px-4 py-2 text-sm font-semibold text-white transition hover:bg-brand-700 disabled:opacity-70" :disabled="openingCourseId === enrollment.course.id" @click="openMoodle(enrollment.course.id)">
+              {{ openingCourseId === enrollment.course.id ? 'Abrindo...' : 'Entrar no Moodle' }}
+            </button>
+          </div>
+        </div>
+      </section>
     </article>
+
+    <p v-else class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+      {{ isLoading ? 'Carregando seus cursos...' : 'Voce ainda nao esta matriculado em nenhum curso.' }}
+    </p>
   </section>
 </template>

@@ -22,6 +22,10 @@ const form = reactive({
   bunnyStorageUserFolder: '',
   bunnyStorageVideoFolder: '',
   bunnyStorageLogoFolder: '',
+  pixKey: '',
+  pixMerchantName: '',
+  pixMerchantCity: '',
+  pixCallbackSecret: '',
 })
 
 const errorMessage = ref('')
@@ -48,6 +52,10 @@ async function loadSetting() {
     form.bunnyStorageUserFolder = setting.bunnyStorageUserFolder || ''
     form.bunnyStorageVideoFolder = setting.bunnyStorageVideoFolder || ''
     form.bunnyStorageLogoFolder = setting.bunnyStorageLogoFolder || ''
+    form.pixKey = setting.pixKey || ''
+    form.pixMerchantName = setting.pixMerchantName || ''
+    form.pixMerchantCity = setting.pixMerchantCity || ''
+    form.pixCallbackSecret = setting.pixCallbackSecret || ''
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Nao foi possivel carregar o setting.'
   } finally {
@@ -136,6 +144,28 @@ onMounted(() => {
           </div>
         </section>
       </div>
+
+      <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <h2 class="text-xl font-semibold text-slate-900">PIX</h2>
+        <div class="mt-5 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Chave PIX</label>
+            <input v-model="form.pixKey" type="text" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Nome do recebedor</label>
+            <input v-model="form.pixMerchantName" type="text" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Cidade do recebedor</label>
+            <input v-model="form.pixMerchantCity" type="text" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Segredo do callback</label>
+            <input v-model="form.pixCallbackSecret" type="text" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
+          </div>
+        </div>
+      </section>
 
       <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
         <h2 class="text-xl font-semibold text-slate-900">Bunny Storage</h2>

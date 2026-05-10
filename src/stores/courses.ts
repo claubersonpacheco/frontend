@@ -12,8 +12,19 @@ export type CourseRecord = {
   shortname: string
   mcode: string | null
   summary: string | null
+  imageUrl: string | null
   visible: string | null
   isPublic: boolean
+  accessType: 'open' | 'private'
+  pricingType: 'free' | 'paid'
+  price: string | null
+  currency: string
+  capacityType: 'unlimited' | 'limited'
+  capacityLimit: number | null
+  paymentMethods: string[] | null
+  paymentTerms: 'cash' | 'installments' | 'both'
+  maxInstallments: number | null
+  bankTransferDetails: string | null
   startdate: string | null
   enddate: string | null
   enrollmentCount: number
@@ -30,6 +41,16 @@ export type CourseEnrollmentRecord = {
   course: CourseRecord
   user: UserRecord
   role: RoleRecord
+  status: 'active' | 'pending_payment'
+  paymentMethod: 'pix' | 'boleto' | 'card' | 'bank_transfer' | 'cash_in_person' | null
+  paymentTerm: 'cash' | 'installments' | null
+  installments: number | null
+  amountDue: string | null
+  paidAt: string | null
+  pixTxid: string | null
+  pixCopyPaste: string | null
+  pixExpiresAt: string | null
+  pixCallbackPayload: Record<string, unknown> | null
   createdAt: string
   updatedAt: string
 }
@@ -92,8 +113,18 @@ export const useCoursesStore = defineStore('courses', () => {
     shortname: string
     mcode?: string
     summary?: string
+    imageUrl?: string
     visible?: string
     isPublic?: string
+    accessType?: 'open' | 'private'
+    pricingType?: 'free' | 'paid'
+    price?: number
+    capacityType?: 'unlimited' | 'limited'
+    capacityLimit?: number
+    paymentMethods?: string[]
+    paymentTerms?: 'cash' | 'installments' | 'both'
+    maxInstallments?: number
+    bankTransferDetails?: string
     startdate?: string
     enddate?: string
     categoryId: number
@@ -114,6 +145,26 @@ export const useCoursesStore = defineStore('courses', () => {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(payload),
+    })
+
+    const updated = await parseJsonResponse<CourseRecord>(response)
+    current.value = updated
+    items.value = items.value.map((item) => (item.id === updated.id ? updated : item))
+    return updated
+  }
+
+  async function uploadCourseImage(id: number | string, file: File) {
+    if (!authStore.accessToken) throw new Error('Sessao expirada. Faca login novamente.')
+
+    const formData = new FormData()
+    formData.append('image', file)
+
+    const response = await fetch(`${API_BASE_URL}/courses/${id}/image`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`,
+      },
+      body: formData,
     })
 
     const updated = await parseJsonResponse<CourseRecord>(response)
@@ -189,6 +240,19 @@ export const useCoursesStore = defineStore('courses', () => {
     enrollments.value = enrollments.value.filter((item) => item.id !== Number(enrollmentId))
   }
 
+  async function approveEnrollmentPayment(courseId: number | string, enrollmentId: number | string) {
+    const response = await fetch(`${API_BASE_URL}/courses/${courseId}/enrollments/${enrollmentId}/approve-payment`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+    })
+
+    const enrollment = await parseJsonResponse<CourseEnrollmentRecord>(response)
+    enrollments.value = enrollments.value.map((item) =>
+      item.id === enrollment.id ? enrollment : item,
+    )
+    return enrollment
+  }
+
   return {
     items,
     current,
@@ -201,8 +265,10 @@ export const useCoursesStore = defineStore('courses', () => {
     fetchMyEnrollments,
     createCourse,
     updateCourse,
+    uploadCourseImage,
     deleteCourse,
     enrollUser,
     unenrollUser,
+    approveEnrollmentPayment,
   }
 })

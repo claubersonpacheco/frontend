@@ -1,5 +1,6 @@
 import { computed, ref } from 'vue'
 import { defineStore } from 'pinia'
+import type { CourseEnrollmentRecord } from './courses'
 
 const AUTH_STORAGE_KEY = 'gestao-idi.auth'
 const AUTH_TOKEN_STORAGE_KEY = 'gestao-idi.token'
@@ -26,7 +27,6 @@ type RegisterPayload = {
   username: string
   name: string
   lastname?: string
-  suspended?: string
   email: string
   password: string
 }
@@ -35,7 +35,6 @@ type UpdateProfilePayload = {
   username: string
   name: string
   lastname?: string
-  suspended?: string
   email: string
 }
 
@@ -44,12 +43,28 @@ type LoginResponse = {
   user: AuthUser
 }
 
+type PublicCourseAccessResponse = LoginResponse & {
+  enrollmentStatus?: 'active' | 'pending_payment'
+  enrollment?: CourseEnrollmentRecord
+}
+
 type PublicCourseRegisterPayload = {
   username: string
   name: string
   lastname?: string
   email: string
   password: string
+  paymentMethod?: 'pix' | 'boleto' | 'card' | 'bank_transfer' | 'cash_in_person'
+  paymentTerm?: 'cash' | 'installments'
+  installments?: number
+}
+
+type PublicCourseLoginPayload = {
+  identifier: string
+  password: string
+  paymentMethod?: 'pix' | 'boleto' | 'card' | 'bank_transfer' | 'cash_in_person'
+  paymentTerm?: 'cash' | 'installments'
+  installments?: number
 }
 
 type ChangePasswordPayload = {
@@ -185,7 +200,6 @@ export const useAuthStore = defineStore('auth', () => {
         username: payload.username.trim(),
         name: payload.name.trim(),
         lastname: payload.lastname?.trim() || undefined,
-        suspended: payload.suspended === '1' ? '1' : '0',
         email: payload.email.trim().toLowerCase(),
         password: payload.password,
       }),
@@ -207,11 +221,39 @@ export const useAuthStore = defineStore('auth', () => {
         lastname: payload.lastname?.trim() || undefined,
         email: payload.email.trim().toLowerCase(),
         password: payload.password,
+        paymentMethod: payload.paymentMethod,
+        paymentTerm: payload.paymentTerm,
+        installments: payload.installments,
       }),
     })
 
-    const nextSession = await parseJsonResponse<LoginResponse>(response)
+    const nextSession = await parseJsonResponse<PublicCourseAccessResponse>(response)
     persistSession(nextSession.user, nextSession.accessToken)
+    return nextSession
+  }
+
+  async function loginForPublicCourse(slug: string, payload: PublicCourseLoginPayload) {
+    if (!payload.identifier.trim() || !payload.password.trim()) {
+      throw new Error('Informe username ou e-mail e senha para continuar.')
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/public-courses/${slug}/login`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        identifier: payload.identifier.trim(),
+        password: payload.password,
+        paymentMethod: payload.paymentMethod,
+        paymentTerm: payload.paymentTerm,
+        installments: payload.installments,
+      }),
+    })
+
+    const nextSession = await parseJsonResponse<PublicCourseAccessResponse>(response)
+    persistSession(nextSession.user, nextSession.accessToken)
+    return nextSession
   }
 
   async function requestPasswordReset(email: string) {
@@ -282,9 +324,6 @@ export const useAuthStore = defineStore('auth', () => {
         username: payload.username.trim(),
         name: payload.name.trim(),
         lastname: payload.lastname?.trim() || undefined,
-        ...(isMaster.value
-          ? { suspended: payload.suspended === '1' ? '1' : '0' }
-          : {}),
         ...(hasPermission('user.email')
           ? { email: payload.email.trim().toLowerCase() }
           : {}),
@@ -373,6 +412,7 @@ export const useAuthStore = defineStore('auth', () => {
     isAuthenticated,
     isMaster,
     login,
+    loginForPublicCourse,
     register,
     registerForPublicCourse,
     requestPasswordReset,

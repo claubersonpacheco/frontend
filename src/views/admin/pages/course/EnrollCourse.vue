@@ -11,6 +11,7 @@ const usersStore = useUsersStore()
 const rolesStore = useRolesStore()
 const errorMessage = ref('')
 const isSubmitting = ref(false)
+const approvingEnrollmentId = ref<number | null>(null)
 
 const form = reactive({
   userId: '',
@@ -76,6 +77,19 @@ async function unenroll(enrollmentId: number) {
   }
 }
 
+async function approvePayment(enrollmentId: number) {
+  errorMessage.value = ''
+  approvingEnrollmentId.value = enrollmentId
+
+  try {
+    await coursesStore.approveEnrollmentPayment(courseId.value, enrollmentId)
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Erro ao confirmar pagamento.'
+  } finally {
+    approvingEnrollmentId.value = null
+  }
+}
+
 onMounted(() => {
   void load()
 })
@@ -132,6 +146,8 @@ onMounted(() => {
             <th class="px-4 py-3">Usuario</th>
             <th class="px-4 py-3">E-mail</th>
             <th class="px-4 py-3">Papel</th>
+            <th class="px-4 py-3">Status</th>
+            <th class="px-4 py-3">Pagamento</th>
             <th class="px-4 py-3 text-right">Acoes</th>
           </tr>
         </thead>
@@ -140,8 +156,24 @@ onMounted(() => {
             <td class="px-4 py-4 font-medium text-slate-900">{{ enrollment.user.name }}</td>
             <td class="px-4 py-4">{{ enrollment.user.email }}</td>
             <td class="px-4 py-4">{{ enrollment.role.name }}</td>
+            <td class="px-4 py-4">
+              <span class="rounded-full px-3 py-1 text-xs font-semibold" :class="enrollment.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
+                {{ enrollment.status === 'active' ? 'Ativa' : 'Pagamento pendente' }}
+              </span>
+            </td>
+            <td class="px-4 py-4">
+              <p class="text-sm">{{ enrollment.paymentMethod || '-' }}</p>
+              <p v-if="enrollment.amountDue" class="text-xs text-slate-500">{{ Number(enrollment.amountDue).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
+              <p v-if="enrollment.pixTxid" class="text-xs text-slate-500">PIX {{ enrollment.pixTxid }}</p>
+              <p v-if="enrollment.paidAt" class="text-xs text-emerald-600">Pago em {{ new Date(enrollment.paidAt).toLocaleDateString('pt-BR') }}</p>
+            </td>
             <td class="px-4 py-4 text-right">
-              <button type="button" class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" @click="unenroll(enrollment.id)">Remover</button>
+              <div class="flex justify-end gap-2">
+                <button v-if="enrollment.status === 'pending_payment'" type="button" class="rounded-xl border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-70" :disabled="approvingEnrollmentId === enrollment.id" @click="approvePayment(enrollment.id)">
+                  {{ approvingEnrollmentId === enrollment.id ? 'Confirmando...' : 'Marcar pago' }}
+                </button>
+                <button type="button" class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" @click="unenroll(enrollment.id)">Remover</button>
+              </div>
             </td>
           </tr>
         </tbody>

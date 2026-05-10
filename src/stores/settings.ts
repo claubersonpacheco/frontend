@@ -21,6 +21,10 @@ export type SettingRecord = {
   bunnyStorageUserFolder: string | null
   bunnyStorageVideoFolder: string | null
   bunnyStorageLogoFolder: string | null
+  pixKey: string | null
+  pixMerchantName: string | null
+  pixMerchantCity: string | null
+  pixCallbackSecret: string | null
   createdAt: string
   updatedAt: string
 }
@@ -40,6 +44,10 @@ export type SettingFormPayload = {
   bunnyStorageUserFolder?: string
   bunnyStorageVideoFolder?: string
   bunnyStorageLogoFolder?: string
+  pixKey?: string
+  pixMerchantName?: string
+  pixMerchantCity?: string
+  pixCallbackSecret?: string
 }
 
 function normalizeApiError(message: unknown) {

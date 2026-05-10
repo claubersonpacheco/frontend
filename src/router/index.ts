@@ -230,6 +230,18 @@ const router = createRouter({
           component: () => import('@/views/admin/pages/course/MyCourses.vue'),
         },
         {
+          path: 'my-courses/:enrollmentId/contract',
+          name: 'my-course-contract',
+          meta: { title: 'Contrato do curso' },
+          component: () => import('@/views/admin/pages/course/MyCourseContract.vue'),
+        },
+        {
+          path: 'my-courses/:enrollmentId/financial',
+          name: 'my-course-financial',
+          meta: { title: 'Financeiro do curso' },
+          component: () => import('@/views/admin/pages/course/MyCourseFinancial.vue'),
+        },
+        {
           path: 'courses/create',
           name: 'courses-create',
           meta: { title: 'Novo curso', permission: 'courses.create' },
