@@ -4,7 +4,7 @@ import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import type { RoleRecord } from './roles'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export type UserRecord = {
   id: number
@@ -22,7 +22,7 @@ export type UserFormPayload = {
   name: string
   lastname?: string
   suspended?: string
-  email: string
+  email?: string
   password?: string
   roleId?: number | null
 }
@@ -39,7 +39,11 @@ function normalizeApiError(message: unknown) {
   return 'Nao foi possivel concluir a requisicao.'
 }
 
-function normalizeUserPayload(payload: UserFormPayload, requirePassword: boolean) {
+function normalizeUserPayload(
+  payload: UserFormPayload,
+  requirePassword: boolean,
+  requireEmail = true,
+) {
   if (!payload.username.trim()) {
     throw new Error('Informe o username.')
   }
@@ -48,7 +52,7 @@ function normalizeUserPayload(payload: UserFormPayload, requirePassword: boolean
     throw new Error('Informe o nome.')
   }
 
-  if (!payload.email.trim()) {
+  if (requireEmail && !payload.email?.trim()) {
     throw new Error('Informe o e-mail.')
   }
 
@@ -61,8 +65,10 @@ function normalizeUserPayload(payload: UserFormPayload, requirePassword: boolean
     name: payload.name.trim(),
     lastname: payload.lastname?.trim() || undefined,
     suspended: payload.suspended === '1' ? '1' : '0',
-    email: payload.email.trim().toLowerCase(),
     roleId: payload.roleId ?? undefined,
+    ...(payload.email !== undefined
+      ? { email: payload.email.trim().toLowerCase() }
+      : {}),
     ...(payload.password?.trim() ? { password: payload.password } : {}),
   }
 }
@@ -155,7 +161,7 @@ export const useUsersStore = defineStore('users', () => {
     const response = await fetch(`${API_BASE_URL}/users/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
-      body: JSON.stringify(normalizeUserPayload(payload, false)),
+      body: JSON.stringify(normalizeUserPayload(payload, false, false)),
     })
 
     const updatedUser = await parseJsonResponse<UserRecord>(response)

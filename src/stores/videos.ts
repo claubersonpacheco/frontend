@@ -2,7 +2,7 @@ import { ref } from 'vue'
 import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export type VideoRecord = {
   id: number
@@ -143,6 +143,20 @@ export const useVideosStore = defineStore('videos', () => {
     return updatedVideo
   }
 
+  async function deleteVideo(id: number | string) {
+    const response = await fetch(`${API_BASE_URL}/videos/${id}`, {
+      method: 'DELETE',
+      headers: getAuthHeaders(),
+    })
+
+    await parseJsonResponse<{ message: string }>(response)
+    items.value = items.value.filter((item) => item.id !== Number(id))
+
+    if (current.value?.id === Number(id)) {
+      current.value = null
+    }
+  }
+
   return {
     items,
     current,
@@ -152,5 +166,6 @@ export const useVideosStore = defineStore('videos', () => {
     initUpload,
     completeUpload,
     updateVideo,
+    deleteVideo,
   }
 })

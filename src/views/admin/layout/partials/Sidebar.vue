@@ -180,10 +180,10 @@ async function handleLogout() {
   />
 
   <aside
-    class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col border-r border-white/70 bg-[linear-gradient(180deg,_rgba(16,36,24,0.98),_rgba(22,57,38,0.96))] px-5 py-6 text-white shadow-2xl shadow-ink-900/20 transition-transform duration-300 lg:translate-x-0"
+    class="fixed inset-y-0 left-0 z-50 flex w-72 flex-col overflow-hidden border-r border-white/70 bg-[linear-gradient(180deg,_rgba(16,36,24,0.98),_rgba(22,57,38,0.96))] px-5 py-6 text-white shadow-2xl shadow-ink-900/20 transition-transform duration-300 lg:translate-x-0"
     :class="props.isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
-    <div class="flex items-start justify-between gap-4">
+    <div class="shrink-0 flex items-start justify-between gap-4">
       <div>
         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-100/75">Gestao IDI</p>
         <h2 class="mt-2 text-2xl font-semibold tracking-tight">Admin panel</h2>
@@ -202,68 +202,63 @@ async function handleLogout() {
       </button>
     </div>
 
-    <nav class="mt-8 space-y-2">
-      <RouterLink
-        v-for="item in visibleNavigationItems"
-        :key="item.name"
-        :to="{ name: item.name }"
-        class="group block rounded-2xl border px-4 py-3 transition"
-        :class="isActiveRoute(item.name)
-          ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
-          : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
-        @click="emit('close')"
-      >
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex min-w-0 items-center gap-3">
-            <span
-              class="flex size-9 shrink-0 items-center justify-center rounded-xl"
-              :class="isActiveRoute(item.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
-            >
-              <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path v-for="path in iconPaths[item.icon]" :key="path" :d="path" />
-              </svg>
-            </span>
-            <p class="truncate font-medium text-white">{{ item.label }}</p>
+    <div class="mt-6 min-h-0 flex-1 space-y-6 overflow-y-auto pr-1 scrollbar-thin scrollbar-thumb-white/20 scrollbar-track-transparent">
+      <nav class="space-y-2">
+        <RouterLink
+          v-for="item in visibleNavigationItems"
+          :key="item.name"
+          :to="{ name: item.name }"
+          class="group block rounded-2xl border px-4 py-3 transition"
+          :class="isActiveRoute(item.name)
+            ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
+            : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
+          @click="emit('close')"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex min-w-0 items-center gap-3">
+              <span
+                class="flex size-9 shrink-0 items-center justify-center rounded-xl"
+                :class="isActiveRoute(item.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
+              >
+                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path v-for="path in iconPaths[item.icon]" :key="path" :d="path" />
+                </svg>
+              </span>
+              <p class="truncate font-medium text-white">{{ item.label }}</p>
+            </div>
           </div>
-         
-        </div>
-      </RouterLink>
-    </nav>
+        </RouterLink>
+      </nav>
 
-    
-
-    <div class="mt-auto space-y-3 border-t-2 border-white/10">
-
-      <nav class="mt-8 space-y-2">
-      <RouterLink
-        v-for="itemSet in visibleNavigationSetting"
-        :key="itemSet.name"
-        :to="{ name: itemSet.name }"
-        class="group block rounded-2xl border px-4 py-3 transition"
-        :class="isActiveRoute(itemSet.name)
-          ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
-          : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
-        @click="emit('close')"
-      >
-        <div class="flex items-center justify-between gap-3">
-          <div class="flex min-w-0 items-center gap-3">
-            <span
-              class="flex size-9 shrink-0 items-center justify-center rounded-xl"
-              :class="isActiveRoute(itemSet.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
-            >
-              <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path v-for="path in iconPaths[itemSet.icon]" :key="path" :d="path" />
-              </svg>
-            </span>
-            <p class="truncate font-medium text-white">{{ itemSet.label }}</p>
+      <nav class="space-y-2 border-t-2 border-white/10 pt-6">
+        <RouterLink
+          v-for="itemSet in visibleNavigationSetting"
+          :key="itemSet.name"
+          :to="{ name: itemSet.name }"
+          class="group block rounded-2xl border px-4 py-3 transition"
+          :class="isActiveRoute(itemSet.name)
+            ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
+            : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
+          @click="emit('close')"
+        >
+          <div class="flex items-center justify-between gap-3">
+            <div class="flex min-w-0 items-center gap-3">
+              <span
+                class="flex size-9 shrink-0 items-center justify-center rounded-xl"
+                :class="isActiveRoute(itemSet.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
+              >
+                <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <path v-for="path in iconPaths[itemSet.icon]" :key="path" :d="path" />
+                </svg>
+              </span>
+              <p class="truncate font-medium text-white">{{ itemSet.label }}</p>
+            </div>
           </div>
-         
-        </div>
-      </RouterLink>
-    </nav>
+        </RouterLink>
+      </nav>
+    </div>
 
-
-     
+    <div class="shrink-0 border-t-2 border-white/10 pt-4">
       <button
         type="button"
         class="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14"

@@ -24,6 +24,7 @@ const form = reactive({
 const errorMessage = ref('')
 const successMessage = ref('')
 const isSubmitting = ref(false)
+const canUpdateEmail = authStore.hasPermission('user.email')
 
 async function handleSubmit() {
   errorMessage.value = ''
@@ -56,6 +57,12 @@ async function handleSubmit() {
           </div>
 
           <div class="flex gap-3">
+            <RouterLink
+              :to="{ name: 'change-password' }"
+              class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700"
+            >
+              Trocar senha
+            </RouterLink>
             <RouterLink
               to="/dashboard"
               class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700"
@@ -126,8 +133,10 @@ async function handleSubmit() {
                 v-model="form.email"
                 type="email"
                 autocomplete="email"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500"
+                :disabled="!canUpdateEmail"
               />
+             
             </div>
 
             <p
@@ -172,10 +181,7 @@ async function handleSubmit() {
               <p class="text-sm text-white/60">E-mail</p>
               <p class="mt-1 font-medium">{{ authStore.user?.email }}</p>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p class="text-sm text-white/60">Suspenso</p>
-              <p class="mt-1 font-medium">{{ authStore.user?.suspended === '1' ? 'Sim' : 'Nao' }}</p>
-            </div>
+            
           </div>
         </aside>
       </section>

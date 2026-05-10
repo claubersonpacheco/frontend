@@ -101,6 +101,15 @@ async function handleLogout() {
                   </svg>
                   Editar perfil
                 </RouterLink>
+                <RouterLink
+                  :to="{ name: 'change-password' }"
+                  class="inline-flex w-full items-center gap-x-3 rounded-xl px-3 py-2 text-sm font-medium text-slate-700 transition hover:bg-white hover:text-brand-700"
+                >
+                  <svg class="size-4 text-slate-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 10.5V7a4.5 4.5 0 0 0-9 0v3.5m-.75 0h10.5A1.75 1.75 0 0 1 19 12.25v6A1.75 1.75 0 0 1 17.25 20H6.75A1.75 1.75 0 0 1 5 18.25v-6a1.75 1.75 0 0 1 1.75-1.75Z" />
+                  </svg>
+                  Trocar senha
+                </RouterLink>
                 <button
                   type="button"
                   class="inline-flex w-full items-center gap-x-3 rounded-xl px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-white"

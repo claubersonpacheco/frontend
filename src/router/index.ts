@@ -1,7 +1,13 @@
-import { createRouter, createWebHistory } from 'vue-router'
+import {
+  createRouter,
+  createWebHistory,
+  type RouteLocationNormalizedLoaded,
+} from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import ForgotPasswordView from '@/views/auth/pages/ForgotPasswordView.vue'
 import LoginView from '@/views/auth/pages/LoginView.vue'
 import RegisterView from '@/views/auth/pages/RegisterView.vue'
+import ResetPasswordView from '@/views/auth/pages/ResetPasswordView.vue'
 import AdminLayout from '@/views/admin/layout/AdminLayout.vue'
 import FrontLayout from '@/views/front/layout/FrontLayout.vue'
 
@@ -12,15 +18,16 @@ const router = createRouter({
       path: '/',
       component: FrontLayout,
       children: [
-        { path: '', name: 'front', component: () => import('@/views/front/pages/IndexFront.vue') },
         {
           path: 'cursos',
           name: 'public-courses',
+          meta: { title: 'Cursos' },
           component: () => import('@/views/front/pages/PublicCourses.vue'),
         },
         {
           path: 'cursos/:slug/cadastro',
           name: 'public-course-register',
+          meta: { title: 'Cadastro no curso' },
           component: () => import('@/views/front/pages/PublicCourseRegister.vue'),
         },
       ],
@@ -29,7 +36,7 @@ const router = createRouter({
     {
       path: '/dashboard',
       component: AdminLayout,
-      meta: { requiredAuth: true },
+      meta: { requiredAuth: true, title: 'Dashboard' },
       children: [
         {
           path: '',
@@ -41,6 +48,12 @@ const router = createRouter({
           name: 'profile',
           meta: { title: 'Perfil' },
           component: () => import('@/views/admin/pages/profile/IndexProfile.vue'),
+        },
+        {
+          path: 'profile/change-password',
+          name: 'change-password',
+          meta: { title: 'Trocar senha' },
+          component: () => import('@/views/admin/pages/profile/ChangePassword.vue'),
         },
         {
           path: 'users',
@@ -243,7 +256,7 @@ const router = createRouter({
       ],
     },
     {
-      path: '/login',
+      path: '',
       redirect: '/auth/login',
     },
     {
@@ -256,6 +269,25 @@ const router = createRouter({
       name: 'Login',
       component: LoginView,
       meta: {
+        title: 'Login',
+        guestOnly: true,
+      },
+    },
+    {
+      path: '/auth/forgot-password',
+      name: 'ForgotPassword',
+      component: ForgotPasswordView,
+      meta: {
+        title: 'Recuperar senha',
+        guestOnly: true,
+      },
+    },
+    {
+      path: '/reset-password',
+      name: 'ResetPassword',
+      component: ResetPasswordView,
+      meta: {
+        title: 'Redefinir senha',
         guestOnly: true,
       },
     },
@@ -264,6 +296,7 @@ const router = createRouter({
       name: 'Register',
       component: RegisterView,
       meta: {
+        title: 'Cadastro',
         guestOnly: true,
       },
     },
@@ -271,6 +304,23 @@ const router = createRouter({
     { path: '/:pathMatch(.*)*', redirect: '/' },
   ],
 })
+
+function getRouteTitle(to: RouteLocationNormalizedLoaded) {
+  const matchedTitle = [...to.matched]
+    .reverse()
+    .find((item) => typeof item.meta?.title === 'string' && item.meta.title.trim())
+    ?.meta.title
+
+  if (typeof matchedTitle === 'string') {
+    return matchedTitle
+  }
+
+  if (typeof to.name === 'string' && to.name.trim()) {
+    return to.name
+  }
+
+  return 'Sistema'
+}
 
 router.beforeEach((to) => {
   const authStore = useAuthStore()
@@ -303,6 +353,7 @@ router.beforeEach((to) => {
 
 router.afterEach((to, from, failure) => {
   if (!failure) {
+    document.title = `${getRouteTitle(to)} | Gestao IDI`
     setTimeout(() => window.HSStaticMethods?.autoInit(), 100)
   }
 })

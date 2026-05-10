@@ -24,6 +24,7 @@ const form = reactive({
 const errorMessage = ref('')
 const isSubmitting = ref(false)
 const isLoading = ref(false)
+const canUpdateEmail = authStore.hasPermission('user.email')
 
 async function loadUser() {
   errorMessage.value = ''
@@ -54,7 +55,11 @@ async function handleSubmit() {
 
   try {
     await usersStore.updateUser(String(route.params.id), {
-      ...form,
+      username: form.username,
+      name: form.name,
+      lastname: form.lastname,
+      suspended: form.suspended,
+      ...(canUpdateEmail ? { email: form.email } : {}),
       roleId: form.roleId ? Number(form.roleId) : null,
     })
     await router.push({ name: 'users' })
@@ -125,7 +130,14 @@ onMounted(() => {
           </div>
           <div class="sm:col-span-2">
             <label for="email" class="mb-2 block text-sm font-medium text-slate-700">E-mail</label>
-            <input id="email" v-model="form.email" type="email" class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500" />
+            <input
+              id="email"
+              v-model="form.email"
+              type="email"
+              class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500"
+              :disabled="!canUpdateEmail"
+            />
+           
           </div>
           <div class="sm:col-span-2">
             <label for="role" class="mb-2 block text-sm font-medium text-slate-700">Role</label>

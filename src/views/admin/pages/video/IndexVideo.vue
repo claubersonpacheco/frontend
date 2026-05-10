@@ -2,9 +2,13 @@
 import { onMounted, ref } from 'vue'
 import { RouterLink } from 'vue-router'
 import { useVideosStore } from '@/stores/videos'
+import { useAuthStore } from '@/stores/auth'
 
 const videosStore = useVideosStore()
+const authStore = useAuthStore()
 const errorMessage = ref('')
+const deletingVideoId = ref<number | null>(null)
+const canDeleteVideos = authStore.hasPermission('videos.delete')
 
 async function loadVideos() {
   errorMessage.value = ''
@@ -18,6 +22,23 @@ async function loadVideos() {
 onMounted(() => {
   void loadVideos()
 })
+
+async function deleteVideo(id: number, name: string) {
+  if (!window.confirm(`Tem certeza que deseja excluir o video "${name}"?`)) {
+    return
+  }
+
+  errorMessage.value = ''
+  deletingVideoId.value = id
+
+  try {
+    await videosStore.deleteVideo(id)
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Nao foi possivel excluir o video.'
+  } finally {
+    deletingVideoId.value = null
+  }
+}
 </script>
 
 <template>
@@ -62,6 +83,15 @@ onMounted(() => {
                 <div class="flex justify-end gap-2">
                   <RouterLink :to="{ name: 'videos-view', params: { id: video.id } }" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">Visualizar</RouterLink>
                   <RouterLink :to="{ name: 'videos-edit', params: { id: video.id } }" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">Editar</RouterLink>
+                  <button
+                    v-if="canDeleteVideos"
+                    type="button"
+                    class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 disabled:opacity-60"
+                    :disabled="deletingVideoId === video.id"
+                    @click="deleteVideo(video.id, video.name)"
+                  >
+                    {{ deletingVideoId === video.id ? 'Excluindo...' : 'Excluir' }}
+                  </button>
                 </div>
               </td>
             </tr>

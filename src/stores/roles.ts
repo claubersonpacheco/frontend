@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 import { useAuthStore } from './auth'
 import type { PermissionRecord } from './permissions'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export type RoleRecord = {
   id: number
@@ -61,8 +61,10 @@ export const useRolesStore = defineStore('roles', () => {
     return {
       name: payload.name.trim(),
       description: payload.description?.trim() || undefined,
-      moodleRoleId: payload.moodleRoleId ?? undefined,
-      permissionIds: payload.permissionIds ?? [],
+      moodleRoleId: payload.moodleRoleId,
+      permissionIds: (payload.permissionIds ?? [])
+        .map((permissionId) => Number(permissionId))
+        .filter((permissionId) => Number.isInteger(permissionId)),
     }
   }
 

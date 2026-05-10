@@ -4,7 +4,7 @@ import { useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import type { CourseRecord } from '@/stores/courses'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 const route = useRoute()
 const router = useRouter()

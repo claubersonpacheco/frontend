@@ -4,7 +4,7 @@ import { useAuthStore } from './auth'
 import type { RoleRecord } from './roles'
 import type { UserRecord } from './users'
 
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 export type CourseRecord = {
   id: number

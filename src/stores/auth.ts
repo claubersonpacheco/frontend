@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 
 const AUTH_STORAGE_KEY = 'gestao-idi.auth'
 const AUTH_TOKEN_STORAGE_KEY = 'gestao-idi.token'
-const API_BASE_URL = import.meta.env.VITE_API_URL ?? 'http://localhost:3000'
+const API_BASE_URL = import.meta.env.VITE_API_URL ?? '/api'
 
 type AuthUser = {
   id: number
@@ -49,6 +49,11 @@ type PublicCourseRegisterPayload = {
   name: string
   lastname?: string
   email: string
+  password: string
+}
+
+type ChangePasswordPayload = {
+  currentPassword: string
   password: string
 }
 
@@ -209,6 +214,47 @@ export const useAuthStore = defineStore('auth', () => {
     persistSession(nextSession.user, nextSession.accessToken)
   }
 
+  async function requestPasswordReset(email: string) {
+    if (!email.trim()) {
+      throw new Error('Informe seu e-mail para recuperar a senha.')
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/forgot-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        email: email.trim().toLowerCase(),
+      }),
+    })
+
+    await parseJsonResponse<unknown>(response)
+  }
+
+  async function resetPassword(token: string, password: string) {
+    if (!token.trim()) {
+      throw new Error('Link de recuperacao invalido ou expirado.')
+    }
+
+    if (!password.trim()) {
+      throw new Error('Informe a nova senha.')
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/reset-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        token: token.trim(),
+        password,
+      }),
+    })
+
+    await parseJsonResponse<unknown>(response)
+  }
+
   async function updateProfile(payload: UpdateProfilePayload) {
     if (!user.value || !accessToken.value) {
       throw new Error('Nenhum usuario autenticado para atualizar.')
@@ -239,7 +285,9 @@ export const useAuthStore = defineStore('auth', () => {
         ...(isMaster.value
           ? { suspended: payload.suspended === '1' ? '1' : '0' }
           : {}),
-        email: payload.email.trim().toLowerCase(),
+        ...(hasPermission('user.email')
+          ? { email: payload.email.trim().toLowerCase() }
+          : {}),
       }),
     })
 
@@ -251,6 +299,40 @@ export const useAuthStore = defineStore('auth', () => {
 
     const nextProfile = await parseJsonResponse<AuthUser>(response)
     persistSession(nextProfile, accessToken.value)
+  }
+
+  async function changePassword(payload: ChangePasswordPayload) {
+    if (!accessToken.value) {
+      throw new Error('Sessao expirada. Faca login novamente.')
+    }
+
+    if (!payload.currentPassword.trim()) {
+      throw new Error('Informe a senha atual.')
+    }
+
+    if (!payload.password.trim()) {
+      throw new Error('Informe a nova senha.')
+    }
+
+    const response = await fetch(`${API_BASE_URL}/auth/change-password`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      body: JSON.stringify({
+        currentPassword: payload.currentPassword,
+        password: payload.password,
+      }),
+    })
+
+    if (response.status === 401) {
+      clearSession()
+      redirectToLoginIfNeeded()
+      throw new Error('Sessao expirada. Faca login novamente.')
+    }
+
+    await parseJsonResponse<unknown>(response)
   }
 
   async function restoreSession() {
@@ -285,6 +367,7 @@ export const useAuthStore = defineStore('auth', () => {
 
   return {
     accessToken,
+    changePassword,
     hasAnyPermission,
     hasPermission,
     isAuthenticated,
@@ -292,6 +375,8 @@ export const useAuthStore = defineStore('auth', () => {
     login,
     register,
     registerForPublicCourse,
+    requestPasswordReset,
+    resetPassword,
     restoreSession,
     updateProfile,
     logout,
