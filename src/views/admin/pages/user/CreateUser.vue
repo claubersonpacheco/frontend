@@ -4,18 +4,15 @@ import { RouterLink, useRouter } from 'vue-router'
 
 import { useUsersStore } from '@/stores/users'
 import { useRolesStore } from '@/stores/roles'
-import { useAuthStore } from '@/stores/auth'
 
 const router = useRouter()
 const usersStore = useUsersStore()
 const rolesStore = useRolesStore()
-const authStore = useAuthStore()
 
 const form = reactive({
   username: '',
   name: '',
   lastname: '',
-  suspended: '0',
   email: '',
   roleId: '',
   password: '',
@@ -100,13 +97,6 @@ void loadRoles()
           <div>
             <label for="lastname" class="mb-2 block text-sm font-medium text-slate-700">Sobrenome</label>
             <input id="lastname" v-model="form.lastname" type="text" class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500" />
-          </div>
-          <div v-if="authStore.isMaster">
-            <label for="suspended" class="mb-2 block text-sm font-medium text-slate-700">Suspenso</label>
-            <select id="suspended" v-model="form.suspended" class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500">
-              <option value="0">Nao</option>
-              <option value="1">Sim</option>
-            </select>
           </div>
           <div class="sm:col-span-2">
             <label for="email" class="mb-2 block text-sm font-medium text-slate-700">E-mail</label>

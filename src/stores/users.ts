@@ -43,6 +43,7 @@ function normalizeUserPayload(
   payload: UserFormPayload,
   requirePassword: boolean,
   requireEmail = true,
+  includeSuspended = true,
 ) {
   if (!payload.username.trim()) {
     throw new Error('Informe o username.')
@@ -60,16 +61,22 @@ function normalizeUserPayload(
     throw new Error('Informe a senha.')
   }
 
-  return {
+  const normalizedPayload = {
     username: payload.username.trim(),
     name: payload.name.trim(),
     lastname: payload.lastname?.trim() || undefined,
-    suspended: payload.suspended === '1' ? '1' : '0',
     roleId: payload.roleId ?? undefined,
     ...(payload.email !== undefined
       ? { email: payload.email.trim().toLowerCase() }
       : {}),
     ...(payload.password?.trim() ? { password: payload.password } : {}),
+  }
+
+  return {
+    ...normalizedPayload,
+    ...(includeSuspended
+      ? { suspended: payload.suspended === '1' ? '1' : '0' }
+      : {}),
   }
 }
 
@@ -149,7 +156,7 @@ export const useUsersStore = defineStore('users', () => {
     const response = await fetch(`${API_BASE_URL}/users`, {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify(normalizeUserPayload(payload, true)),
+      body: JSON.stringify(normalizeUserPayload(payload, true, true, false)),
     })
 
     const createdUser = await parseJsonResponse<UserRecord>(response)

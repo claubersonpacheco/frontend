@@ -16,7 +16,6 @@ const form = reactive({
   username: '',
   name: '',
   lastname: '',
-  suspended: '0',
   email: '',
   roleId: '',
 })
@@ -38,7 +37,6 @@ async function loadUser() {
     form.username = user.username
     form.name = user.name
     form.lastname = user.lastname
-    form.suspended = user.suspended
     form.email = user.email
     form.roleId = user.role?.id.toString() ?? ''
   } catch (error) {
@@ -58,7 +56,6 @@ async function handleSubmit() {
       username: form.username,
       name: form.name,
       lastname: form.lastname,
-      suspended: form.suspended,
       ...(canUpdateEmail ? { email: form.email } : {}),
       roleId: form.roleId ? Number(form.roleId) : null,
     })
@@ -105,7 +102,7 @@ onMounted(() => {
       <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
         <div class="mb-8">
           <h2 class="text-xl font-semibold text-slate-900">Dados do usuario</h2>
-          <p class="mt-1 text-sm text-slate-500">Atualize username, nome, sobrenome, e-mail e status.</p>
+          <p class="mt-1 text-sm text-slate-500">Atualize username, nome, sobrenome, e-mail e role.</p>
         </div>
 
         <div class="grid gap-5 sm:grid-cols-2">
@@ -120,13 +117,6 @@ onMounted(() => {
           <div>
             <label for="lastname" class="mb-2 block text-sm font-medium text-slate-700">Sobrenome</label>
             <input id="lastname" v-model="form.lastname" type="text" class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500" />
-          </div>
-          <div v-if="authStore.isMaster">
-            <label for="suspended" class="mb-2 block text-sm font-medium text-slate-700">Suspenso</label>
-            <select id="suspended" v-model="form.suspended" class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500">
-              <option value="0">Nao</option>
-              <option value="1">Sim</option>
-            </select>
           </div>
           <div class="sm:col-span-2">
             <label for="email" class="mb-2 block text-sm font-medium text-slate-700">E-mail</label>

@@ -2,12 +2,15 @@
 import { computed, onMounted, ref, watch } from 'vue'
 import { RouterLink } from 'vue-router'
 
-import { useUsersStore } from '@/stores/users'
+import { useAuthStore } from '@/stores/auth'
+import { useUsersStore, type UserRecord } from '@/stores/users'
 
 const usersStore = useUsersStore()
+const authStore = useAuthStore()
 const errorMessage = ref('')
 const searchTerm = ref('')
 const currentPage = ref(1)
+const updatingStatusIds = ref(new Set<number>())
 const pageSize = 8
 
 const filteredUsers = computed(() => {
@@ -81,6 +84,35 @@ function goToPreviousPage() {
 function goToNextPage() {
   if (currentPage.value < totalPages.value) {
     currentPage.value += 1
+  }
+}
+
+function isUpdatingStatus(userId: number) {
+  return updatingStatusIds.value.has(userId)
+}
+
+async function updateUserStatus(user: UserRecord, suspended: string) {
+  if (suspended === user.suspended || isUpdatingStatus(user.id)) {
+    return
+  }
+
+  errorMessage.value = ''
+  updatingStatusIds.value = new Set(updatingStatusIds.value).add(user.id)
+
+  try {
+    await usersStore.updateUser(user.id, {
+      username: user.username,
+      name: user.name,
+      lastname: user.lastname,
+      suspended,
+    })
+  } catch (error) {
+    errorMessage.value =
+      error instanceof Error ? error.message : 'Nao foi possivel atualizar o status.'
+  } finally {
+    const nextUpdatingStatusIds = new Set(updatingStatusIds.value)
+    nextUpdatingStatusIds.delete(user.id)
+    updatingStatusIds.value = nextUpdatingStatusIds
   }
 }
 </script>
@@ -174,7 +206,18 @@ function goToNextPage() {
               <td class="px-4 py-4">{{ item.email }}</td>
               <td class="px-4 py-4">{{ item.role?.name ?? '-' }}</td>
               <td class="px-4 py-4">
+                <select
+                  v-if="authStore.isMaster"
+                  :value="item.suspended"
+                  class="min-w-32 rounded-xl border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  :disabled="isUpdatingStatus(item.id)"
+                  @change="updateUserStatus(item, ($event.target as HTMLSelectElement).value)"
+                >
+                  <option value="0">Ativo</option>
+                  <option value="1">Suspenso</option>
+                </select>
                 <span
+                  v-else
                   class="rounded-full px-3 py-1 text-xs font-semibold"
                   :class="item.suspended === '1' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'"
                 >
