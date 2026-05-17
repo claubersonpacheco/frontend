@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -29,13 +29,30 @@ const form = reactive({
 
 const errorMessage = ref('')
 const isSubmitting = ref(false)
+const selectedLogo = ref<File | null>(null)
+const logoPreview = ref('')
+const logoPreviewUrl = computed(() => logoPreview.value || form.logo)
+
+function handleLogoChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0] ?? null
+
+  selectedLogo.value = file
+  logoPreview.value = file ? URL.createObjectURL(file) : ''
+}
 
 async function handleSubmit() {
   errorMessage.value = ''
   isSubmitting.value = true
 
   try {
-    await settingsStore.createSetting(form)
+    const setting = await settingsStore.createSetting(form)
+
+    if (selectedLogo.value) {
+      await settingsStore.uploadSettingLogo(setting.id, selectedLogo.value)
+      selectedLogo.value = null
+    }
+
     await router.push({ name: 'settings' })
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Nao foi possivel criar o setting.'
@@ -68,6 +85,24 @@ async function handleSubmit() {
           <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">Logo URL</label>
             <input v-model="form.logo" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div class="sm:col-span-2 grid gap-4 rounded-md border border-slate-100 bg-slate-50 p-4 sm:grid-cols-[180px_1fr] sm:items-center">
+            <div class="flex h-24 items-center justify-center overflow-hidden rounded-md border border-dashed border-slate-200 bg-white px-4">
+              <img v-if="logoPreviewUrl" :src="logoPreviewUrl" alt="Preview da logo" class="max-h-full max-w-full object-contain" />
+              <span v-else class="text-sm text-slate-400">Logo</span>
+            </div>
+            <div>
+              <label class="mb-2 block text-sm font-medium text-slate-700">Enviar logo para Bunny</label>
+              <input
+                type="file"
+                accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
+                class="block w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-sm"
+                @change="handleLogoChange"
+              />
+              <p class="mt-2 text-xs leading-5 text-slate-500">
+                JPG, PNG, WEBP, GIF ou SVG ate 5MB. O arquivo sera salvo na pasta configurada em Logo Folder.
+              </p>
+            </div>
           </div>
         </div>
       </section>

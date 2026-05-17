@@ -67,6 +67,7 @@ onMounted(() => {
           <thead>
             <tr class="text-left text-xs uppercase tracking-[0.18em] text-slate-400">
               <th class="px-4 py-3 font-semibold">Nome</th>
+              <th class="px-4 py-3 font-semibold">Logo</th>
               <th class="px-4 py-3 font-semibold">Moodle URL</th>
               <th class="px-4 py-3 font-semibold">Stream Library</th>
               <th class="px-4 py-3 font-semibold">Bunny Base URL</th>
@@ -76,6 +77,12 @@ onMounted(() => {
           <tbody class="divide-y divide-slate-100">
             <tr v-for="item in filteredSettings" :key="item.id" class="text-sm text-slate-700">
               <td class="px-4 py-4 font-medium text-slate-900">{{ item.name || '-' }}</td>
+              <td class="px-4 py-4">
+                <div class="flex h-12 w-24 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white px-2">
+                  <img v-if="item.logo" :src="item.logo" :alt="`Logo de ${item.name || 'setting'}`" class="max-h-full max-w-full object-contain" />
+                  <span v-else class="text-xs text-slate-400">Sem logo</span>
+                </div>
+              </td>
               <td class="px-4 py-4">{{ item.moodleUrl || '-' }}</td>
               <td class="px-4 py-4">{{ item.streamLibraryId || '-' }}</td>
               <td class="px-4 py-4">{{ item.bunnyStorageBaseUrl || '-' }}</td>

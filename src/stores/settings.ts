@@ -148,6 +148,28 @@ export const useSettingsStore = defineStore('settings', () => {
     return updatedSetting
   }
 
+  async function uploadSettingLogo(id: number | string, file: File) {
+    if (!authStore.accessToken) {
+      throw new Error('Sessao expirada. Faca login novamente.')
+    }
+
+    const formData = new FormData()
+    formData.append('logo', file)
+
+    const response = await fetch(`${API_BASE_URL}/settings/${id}/logo`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`,
+      },
+      body: formData,
+    })
+
+    const updatedSetting = await parseJsonResponse<SettingRecord>(response)
+    current.value = updatedSetting
+    items.value = items.value.map((item) => (item.id === updatedSetting.id ? updatedSetting : item))
+    return updatedSetting
+  }
+
   async function deleteSetting(id: number | string) {
     const response = await fetch(`${API_BASE_URL}/settings/${id}`, {
       method: 'DELETE',
@@ -175,6 +197,7 @@ export const useSettingsStore = defineStore('settings', () => {
     fetchSettingById,
     createSetting,
     updateSetting,
+    uploadSettingLogo,
     deleteSetting,
   }
 })

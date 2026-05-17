@@ -1,8 +1,9 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { RouterLink, useRoute, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
+import { useSettingsStore } from '@/stores/settings'
 
 const props = defineProps<{
   isOpen: boolean
@@ -15,6 +16,7 @@ const emit = defineEmits<{
 const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
+const settingsStore = useSettingsStore()
 
 const navigationItems = [
   {
@@ -124,6 +126,9 @@ const iconPaths = {
 } as const
 
 const userName = computed(() => authStore.user?.name ?? 'Usuario')
+const activeSetting = computed(() => settingsStore.items.at(-1) ?? null)
+const sidebarLogoUrl = computed(() => activeSetting.value?.logo || '')
+const platformName = computed(() => activeSetting.value?.name || 'Gestao IDI')
 const visibleNavigationItems = computed(() =>
   navigationItems.filter(
     (item) => !('permission' in item) || authStore.hasPermission(item.permission),
@@ -170,6 +175,14 @@ async function handleLogout() {
   emit('close')
   await router.push('/auth/login')
 }
+
+onMounted(async () => {
+  if (!authStore.hasPermission('settings.read') || settingsStore.items.length) {
+    return
+  }
+
+  await settingsStore.fetchSettings().catch(() => undefined)
+})
 </script>
 
 <template>
@@ -184,10 +197,14 @@ async function handleLogout() {
     :class="props.isOpen ? 'translate-x-0' : '-translate-x-full'"
   >
     <div class="shrink-0 flex items-start justify-between gap-4">
-      <div>
-        <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-100/75">Gestao IDI</p>
-        <h2 class="mt-2 text-2xl font-semibold tracking-tight">Admin panel</h2>
-        <p class="mt-2 text-sm leading-6 text-white/65">Navegue pelas areas principais do sistema com um layout mais direto.</p>
+      <div class="min-w-0 flex-1">
+        <div v-if="sidebarLogoUrl" class="flex h-20 w-full items-center justify-start overflow-hidden px-0 py-2">
+          <img :src="sidebarLogoUrl" :alt="`Logo ${platformName}`" class="max-h-full max-w-full object-contain" />
+        </div>
+        <div v-else>
+          <p class="text-xs font-semibold uppercase tracking-[0.24em] text-brand-100/75">{{ platformName }}</p>
+          <h2 class="mt-2 text-2xl font-semibold tracking-tight">Admin panel</h2>
+        </div>
       </div>
 
       <button
