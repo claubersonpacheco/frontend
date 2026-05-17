@@ -131,6 +131,15 @@ watch(
           <p class="mt-3 text-sm leading-6 text-slate-600">Seu pagamento foi confirmado e o acesso ao curso esta liberado.</p>
         </template>
 
+        <template v-else-if="enrollment.asaasInvoiceUrl">
+          <h2 class="text-xl font-semibold text-slate-900">Pagar pelo Asaas</h2>
+          <p class="mt-3 text-sm leading-6 text-slate-600">Abra a cobranca para concluir o pagamento com a forma escolhida.</p>
+          <a :href="enrollment.asaasInvoiceUrl" target="_blank" rel="noopener noreferrer" class="mt-5 inline-flex rounded-md bg-brand-600 px-5 py-3 text-sm font-semibold text-white transition hover:bg-brand-700">
+            Abrir pagamento
+          </a>
+          <p v-if="enrollment.asaasPaymentStatus" class="mt-3 text-xs text-slate-500">Status Asaas: {{ enrollment.asaasPaymentStatus }}</p>
+        </template>
+
         <template v-else-if="enrollment.paymentMethod === 'pix' && enrollment.pixCopyPaste">
           <h2 class="text-xl font-semibold text-slate-900">Pagar com PIX</h2>
           <div v-if="pixQrCodeUrl" class="mt-5 flex justify-center rounded-md bg-slate-50 p-4">

@@ -51,6 +51,12 @@ export type CourseEnrollmentRecord = {
   pixCopyPaste: string | null
   pixExpiresAt: string | null
   pixCallbackPayload: Record<string, unknown> | null
+  asaasCustomerId: string | null
+  asaasPaymentId: string | null
+  asaasInvoiceUrl: string | null
+  asaasBankSlipUrl: string | null
+  asaasPaymentStatus: string | null
+  asaasWebhookPayload: Record<string, unknown> | null
   createdAt: string
   updatedAt: string
 }

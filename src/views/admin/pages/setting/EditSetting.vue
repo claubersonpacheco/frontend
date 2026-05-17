@@ -29,6 +29,9 @@ const form = reactive({
   pixMerchantName: '',
   pixMerchantCity: '',
   pixCallbackSecret: '',
+  asaasApiKey: '',
+  asaasBaseUrl: '',
+  asaasWebhookToken: '',
 })
 
 const errorMessage = ref('')
@@ -81,6 +84,9 @@ async function loadSetting() {
     form.pixMerchantName = setting.pixMerchantName || ''
     form.pixMerchantCity = setting.pixMerchantCity || ''
     form.pixCallbackSecret = setting.pixCallbackSecret || ''
+    form.asaasApiKey = setting.asaasApiKey || ''
+    form.asaasBaseUrl = setting.asaasBaseUrl || ''
+    form.asaasWebhookToken = setting.asaasWebhookToken || ''
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : 'Nao foi possivel carregar o setting.'
   } finally {
@@ -136,10 +142,6 @@ onMounted(() => {
           <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">Nome</label>
             <input v-model="form.name" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
-          </div>
-          <div>
-            <label class="mb-2 block text-sm font-medium text-slate-700">Logo URL</label>
-            <input v-model="form.logo" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
           </div>
           <div
             v-for="logoField in logoFields"
@@ -219,6 +221,24 @@ onMounted(() => {
           <div>
             <label class="mb-2 block text-sm font-medium text-slate-700">Segredo do callback</label>
             <input v-model="form.pixCallbackSecret" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+          </div>
+        </div>
+      </section>
+
+      <section class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <h2 class="text-xl font-semibold text-slate-900">Asaas</h2>
+        <div class="mt-5 grid gap-5 sm:grid-cols-2">
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">API Key</label>
+            <input v-model="form.asaasApiKey" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div>
+            <label class="mb-2 block text-sm font-medium text-slate-700">Base URL</label>
+            <input v-model="form.asaasBaseUrl" type="text" placeholder="https://api-sandbox.asaas.com/v3" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+          </div>
+          <div class="sm:col-span-2">
+            <label class="mb-2 block text-sm font-medium text-slate-700">Webhook token</label>
+            <input v-model="form.asaasWebhookToken" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
           </div>
         </div>
       </section>

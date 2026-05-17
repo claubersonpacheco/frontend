@@ -28,6 +28,9 @@ export type SettingRecord = {
   pixMerchantName: string | null
   pixMerchantCity: string | null
   pixCallbackSecret: string | null
+  asaasApiKey: string | null
+  asaasBaseUrl: string | null
+  asaasWebhookToken: string | null
   createdAt: string
   updatedAt: string
 }
@@ -54,6 +57,9 @@ export type SettingFormPayload = {
   pixMerchantName?: string
   pixMerchantCity?: string
   pixCallbackSecret?: string
+  asaasApiKey?: string
+  asaasBaseUrl?: string
+  asaasWebhookToken?: string
 }
 
 function normalizeApiError(message: unknown) {
