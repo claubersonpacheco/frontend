@@ -31,7 +31,7 @@ const items = computed(() => {
 
 <template>
   <nav
-    class="flex flex-wrap items-center gap-2 rounded-[1.5rem] border border-white/70 bg-white/75 px-4 py-3 text-sm shadow-sm shadow-slate-900/5 backdrop-blur"
+    class="flex flex-wrap items-center gap-2 rounded-md border border-white/70 bg-white/75 px-4 py-3 text-sm shadow-sm shadow-slate-900/5 backdrop-blur"
     aria-label="Breadcrumb"
   >
     <RouterLink to="/" class="font-medium text-slate-500 transition hover:text-brand-700">Home</RouterLink>

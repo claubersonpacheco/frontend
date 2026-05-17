@@ -13,6 +13,7 @@ type AuthUser = {
   name: string
   lastname: string
   suspended: string
+  photoUrl: string | null
   role: {
     id: number
     name: string
@@ -340,6 +341,32 @@ export const useAuthStore = defineStore('auth', () => {
     persistSession(nextProfile, accessToken.value)
   }
 
+  async function uploadProfilePhoto(file: File) {
+    if (!user.value || !accessToken.value) {
+      throw new Error('Nenhum usuario autenticado para atualizar.')
+    }
+
+    const formData = new FormData()
+    formData.append('photo', file)
+
+    const response = await fetch(`${API_BASE_URL}/users/${user.value.id}/photo`, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${accessToken.value}`,
+      },
+      body: formData,
+    })
+
+    if (response.status === 401) {
+      clearSession()
+      redirectToLoginIfNeeded()
+      throw new Error('Sessao expirada. Faca login novamente.')
+    }
+
+    const nextProfile = await parseJsonResponse<AuthUser>(response)
+    persistSession(nextProfile, accessToken.value)
+  }
+
   async function changePassword(payload: ChangePasswordPayload) {
     if (!accessToken.value) {
       throw new Error('Sessao expirada. Faca login novamente.')
@@ -419,6 +446,7 @@ export const useAuthStore = defineStore('auth', () => {
     resetPassword,
     restoreSession,
     updateProfile,
+    uploadProfilePhoto,
     logout,
     user,
   }

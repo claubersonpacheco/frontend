@@ -30,15 +30,15 @@ async function save() {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <h1 class="text-3xl font-semibold tracking-tight text-slate-900">Editar pasta</h1>
     </header>
-    <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
-      <input v-model="form.name" type="text" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
-      <p v-if="errorMessage" class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <article class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+      <input v-model="form.name" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+      <p v-if="errorMessage" class="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
       <div class="mt-6 flex gap-3">
-        <button type="button" class="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="save">Salvar</button>
-        <RouterLink :to="{ name: 'folders' }" class="rounded-xl border border-slate-200 px-6 py-3 text-sm font-medium text-slate-700">Cancelar</RouterLink>
+        <button type="button" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="save">Salvar</button>
+        <RouterLink :to="{ name: 'folders' }" class="rounded-md border border-slate-200 px-6 py-3 text-sm font-medium text-slate-700">Cancelar</RouterLink>
       </div>
     </article>
   </section>

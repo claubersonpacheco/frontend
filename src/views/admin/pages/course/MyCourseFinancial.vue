@@ -90,20 +90,20 @@ watch(
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Financeiro</p>
           <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{{ enrollment?.course.fullname ?? 'Curso' }}</h1>
         </div>
-        <RouterLink :to="{ name: 'my-courses' }" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar</RouterLink>
+        <RouterLink :to="{ name: 'my-courses' }" class="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar</RouterLink>
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
     <article v-if="enrollment" class="grid gap-6 lg:grid-cols-[0.9fr_1.1fr]">
-      <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+      <section class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
         <h2 class="text-xl font-semibold text-slate-900">Resumo</h2>
         <dl class="mt-5 grid gap-4 text-sm">
           <div>
@@ -125,7 +125,7 @@ watch(
         </dl>
       </section>
 
-      <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+      <section class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
         <template v-if="enrollment.status === 'active'">
           <h2 class="text-xl font-semibold text-slate-900">Pagamento confirmado</h2>
           <p class="mt-3 text-sm leading-6 text-slate-600">Seu pagamento foi confirmado e o acesso ao curso esta liberado.</p>
@@ -133,12 +133,12 @@ watch(
 
         <template v-else-if="enrollment.paymentMethod === 'pix' && enrollment.pixCopyPaste">
           <h2 class="text-xl font-semibold text-slate-900">Pagar com PIX</h2>
-          <div v-if="pixQrCodeUrl" class="mt-5 flex justify-center rounded-2xl bg-slate-50 p-4">
+          <div v-if="pixQrCodeUrl" class="mt-5 flex justify-center rounded-md bg-slate-50 p-4">
             <img :src="pixQrCodeUrl" alt="QR Code PIX" class="h-56 w-56" />
           </div>
-          <textarea :value="enrollment.pixCopyPaste" readonly rows="4" class="mt-4 block w-full rounded-xl border-slate-200 bg-white px-4 py-3 text-xs text-slate-700"></textarea>
+          <textarea :value="enrollment.pixCopyPaste" readonly rows="4" class="mt-4 block w-full rounded-md border-slate-200 bg-white px-4 py-3 text-xs text-slate-700"></textarea>
           <div class="mt-3 flex flex-wrap items-center gap-3">
-            <button type="button" class="rounded-xl bg-emerald-600 px-4 py-3 text-sm font-semibold text-white" @click="copyPixCode">Copiar codigo PIX</button>
+            <button type="button" class="rounded-md bg-emerald-600 px-4 py-3 text-sm font-semibold text-white" @click="copyPixCode">Copiar codigo PIX</button>
             <span v-if="copyMessage" class="text-sm text-emerald-700">{{ copyMessage }}</span>
           </div>
           <p v-if="enrollment.pixTxid" class="mt-3 text-xs text-slate-500">TXID: {{ enrollment.pixTxid }}</p>
@@ -162,7 +162,7 @@ watch(
       </section>
     </article>
 
-    <p v-else class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+    <p v-else class="rounded-md border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
       {{ isLoading ? 'Carregando financeiro...' : 'Financeiro nao encontrado.' }}
     </p>
   </section>

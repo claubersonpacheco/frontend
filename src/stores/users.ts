@@ -14,6 +14,7 @@ export type UserRecord = {
   lastname: string
   suspended: string
   moodleUserId: number | null
+  photoUrl: string | null
   role: RoleRecord | null
 }
 

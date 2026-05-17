@@ -253,6 +253,24 @@ export const useCoursesStore = defineStore('courses', () => {
     return enrollment
   }
 
+  async function updateEnrollmentPayment(
+    courseId: number | string,
+    enrollmentId: number | string,
+    paymentStatus: 'pending_payment' | 'paid' | 'manual',
+  ) {
+    const response = await fetch(`${API_BASE_URL}/courses/${courseId}/enrollments/${enrollmentId}/payment`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ paymentStatus }),
+    })
+
+    const enrollment = await parseJsonResponse<CourseEnrollmentRecord>(response)
+    enrollments.value = enrollments.value.map((item) =>
+      item.id === enrollment.id ? enrollment : item,
+    )
+    return enrollment
+  }
+
   return {
     items,
     current,
@@ -270,5 +288,6 @@ export const useCoursesStore = defineStore('courses', () => {
     enrollUser,
     unenrollUser,
     approveEnrollmentPayment,
+    updateEnrollmentPayment,
   }
 })

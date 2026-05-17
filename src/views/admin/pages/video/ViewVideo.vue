@@ -45,22 +45,22 @@ async function copyVideoLink() {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Videos</p>
           <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">Visualizar video</h1>
         </div>
         <div class="flex gap-2">
-          <RouterLink :to="{ name: 'videos-edit', params: { id: route.params.id } }" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">Editar</RouterLink>
-          <RouterLink :to="{ name: 'videos' }" class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">Voltar</RouterLink>
+          <RouterLink :to="{ name: 'videos-edit', params: { id: route.params.id } }" class="rounded-md border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">Editar</RouterLink>
+          <RouterLink :to="{ name: 'videos' }" class="rounded-md border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700">Voltar</RouterLink>
         </div>
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-    <article v-else-if="video" class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article v-else-if="video" class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <h2 class="text-xl font-semibold text-slate-900">{{ video.name }}</h2>
       <p class="mt-2 text-sm text-slate-500">Folder: {{ video.folder?.name || '-' }}</p>
 
@@ -70,11 +70,11 @@ async function copyVideoLink() {
           <input
             :value="publicVideoUrl"
             readonly
-            class="block w-full rounded-xl border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
+            class="block w-full rounded-md border-slate-200 bg-slate-50 px-4 py-3 text-sm text-slate-700"
           />
           <button
             type="button"
-            class="rounded-xl border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
+            class="rounded-md border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700"
             :disabled="!publicVideoUrl"
             @click="copyVideoLink"
           >
@@ -84,7 +84,7 @@ async function copyVideoLink() {
         <p v-if="copyFeedback" class="mt-2 text-sm text-emerald-700">{{ copyFeedback }}</p>
       </div>
 
-      <div v-if="playerUrl" class="mt-6 overflow-hidden rounded-2xl border border-slate-200">
+      <div v-if="playerUrl" class="mt-6 overflow-hidden rounded-md border border-slate-200">
         <iframe
           :src="playerUrl"
           loading="lazy"
@@ -94,7 +94,7 @@ async function copyVideoLink() {
         />
       </div>
 
-      <p v-else class="mt-4 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
+      <p v-else class="mt-4 rounded-md border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-700">
         O video ainda nao possui GUID/Biblioteca para visualizacao.
       </p>
     </article>

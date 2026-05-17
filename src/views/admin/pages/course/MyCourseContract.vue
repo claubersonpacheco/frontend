@@ -48,25 +48,25 @@ onMounted(() => {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Contrato</p>
           <h1 class="mt-2 text-3xl font-semibold tracking-tight text-slate-900">{{ enrollment?.course.fullname ?? 'Curso' }}</h1>
         </div>
-        <RouterLink :to="{ name: 'my-courses' }" class="rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar</RouterLink>
+        <RouterLink :to="{ name: 'my-courses' }" class="rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar</RouterLink>
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-    <article v-if="enrollment" class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article v-if="enrollment" class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <h2 class="text-xl font-semibold text-slate-900">Termo de inscricao</h2>
       <p class="mt-4 text-sm leading-7 text-slate-700">{{ contractText() }}</p>
       <div v-if="enrollment.course.summary" class="mt-6 border-t border-slate-100 pt-6 text-sm leading-7 text-slate-700 [&_a]:underline [&_h3]:text-lg [&_h3]:font-semibold [&_ul]:list-disc [&_ul]:pl-5" v-html="enrollment.course.summary" />
     </article>
 
-    <p v-else class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
+    <p v-else class="rounded-md border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">
       {{ isLoading ? 'Carregando contrato...' : 'Contrato nao encontrado.' }}
     </p>
   </section>

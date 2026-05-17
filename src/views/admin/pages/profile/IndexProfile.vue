@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed, reactive, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 
 import { useAuthStore } from '@/stores/auth'
@@ -23,7 +23,25 @@ const form = reactive({
 const errorMessage = ref('')
 const successMessage = ref('')
 const isSubmitting = ref(false)
+const selectedPhoto = ref<File | null>(null)
+const photoPreview = ref('')
 const canUpdateEmail = authStore.hasPermission('user.email')
+
+const profilePhotoUrl = computed(() => photoPreview.value || authStore.user?.photoUrl || '')
+const profileInitials = computed(() => {
+  const name = authStore.user?.name || form.name || authStore.user?.username || 'U'
+  const lastname = authStore.user?.lastname || form.lastname || ''
+
+  return `${name.charAt(0)}${lastname.charAt(0)}`.toUpperCase()
+})
+
+function handlePhotoChange(event: Event) {
+  const input = event.target as HTMLInputElement
+  const file = input.files?.[0] ?? null
+
+  selectedPhoto.value = file
+  photoPreview.value = file ? URL.createObjectURL(file) : ''
+}
 
 async function handleSubmit() {
   errorMessage.value = ''
@@ -32,6 +50,12 @@ async function handleSubmit() {
 
   try {
     await authStore.updateProfile(form)
+
+    if (selectedPhoto.value) {
+      await authStore.uploadProfilePhoto(selectedPhoto.value)
+      selectedPhoto.value = null
+    }
+
     successMessage.value = 'Perfil atualizado com sucesso.'
   } catch (error) {
     errorMessage.value =
@@ -45,7 +69,7 @@ async function handleSubmit() {
 <template>
   <main class="min-h-screen px-4 py-6 sm:px-6 lg:px-8">
     <div class="mx-auto max-w-6xl space-y-6">
-      <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+      <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
         <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
           <div>
             <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Perfil</p>
@@ -58,13 +82,13 @@ async function handleSubmit() {
           <div class="flex gap-3">
             <RouterLink
               :to="{ name: 'change-password' }"
-              class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700"
+              class="inline-flex items-center justify-center rounded-md bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700"
             >
               Trocar senha
             </RouterLink>
             <RouterLink
               to="/dashboard"
-              class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700"
+              class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700"
             >
               Voltar ao dashboard
             </RouterLink>
@@ -73,13 +97,33 @@ async function handleSubmit() {
       </header>
 
       <section class="grid gap-6 xl:grid-cols-[1.15fr_0.85fr]">
-        <article class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+        <article class="rounded-md border border-white/70 bg-white/85 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
           <div class="mb-8">
             <h2 class="text-xl font-semibold text-slate-900">Dados cadastrais</h2>
-            <p class="mt-1 text-sm text-slate-500">Edite username, nome, sobrenome e e-mail.</p>
+            <p class="mt-1 text-sm text-slate-500">Edite username, nome, sobrenome, e-mail e foto.</p>
           </div>
 
           <form class="grid gap-5 sm:grid-cols-2" @submit.prevent="handleSubmit">
+            <div class="sm:col-span-2 grid gap-4 rounded-md border border-slate-100 bg-slate-50 p-4 sm:grid-cols-[96px_1fr] sm:items-center">
+              <div class="flex size-24 items-center justify-center overflow-hidden rounded-md bg-brand-100 text-2xl font-semibold text-brand-700">
+                <img v-if="profilePhotoUrl" :src="profilePhotoUrl" alt="Foto do perfil" class="h-full w-full object-cover" />
+                <span v-else>{{ profileInitials }}</span>
+              </div>
+              <div>
+                <label for="photo" class="mb-2 block text-sm font-medium text-slate-700">Foto do perfil</label>
+                <input
+                  id="photo"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  class="block w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                  @change="handlePhotoChange"
+                />
+                <p class="mt-2 text-xs leading-5 text-slate-500">
+                  JPG, PNG, WEBP ou GIF ate 5MB. Ao salvar, a foto tambem sera atualizada no Moodle.
+                </p>
+              </div>
+            </div>
+
             <div>
               <label for="username" class="mb-2 block text-sm font-medium text-slate-700">Username</label>
               <input
@@ -87,7 +131,7 @@ async function handleSubmit() {
                 v-model="form.username"
                 type="text"
                 autocomplete="username"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
               />
             </div>
 
@@ -98,7 +142,7 @@ async function handleSubmit() {
                 v-model="form.name"
                 type="text"
                 autocomplete="given-name"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
               />
             </div>
 
@@ -109,7 +153,7 @@ async function handleSubmit() {
                 v-model="form.lastname"
                 type="text"
                 autocomplete="family-name"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
               />
             </div>
 
@@ -120,7 +164,7 @@ async function handleSubmit() {
                 v-model="form.email"
                 type="email"
                 autocomplete="email"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500"
+                class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:bg-slate-100 disabled:text-slate-500"
                 :disabled="!canUpdateEmail"
               />
              
@@ -128,14 +172,14 @@ async function handleSubmit() {
 
             <p
               v-if="errorMessage"
-              class="sm:col-span-2 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+              class="sm:col-span-2 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
             >
               {{ errorMessage }}
             </p>
 
             <p
               v-if="successMessage"
-              class="sm:col-span-2 rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
+              class="sm:col-span-2 rounded-md border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700"
             >
               {{ successMessage }}
             </p>
@@ -143,7 +187,7 @@ async function handleSubmit() {
             <div class="sm:col-span-2 flex justify-end">
               <button
                 type="submit"
-                class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-70"
+                class="inline-flex items-center justify-center rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-70"
                 :disabled="isSubmitting"
               >
                 {{ isSubmitting ? 'Salvando...' : 'Salvar alteracoes' }}
@@ -152,7 +196,7 @@ async function handleSubmit() {
           </form>
         </article>
 
-        <aside class="rounded-[2rem] border border-ink-900/10 bg-[linear-gradient(180deg,_rgba(16,36,24,0.98),_rgba(22,57,38,0.96))] p-6 text-white shadow-xl shadow-ink-900/15">
+        <aside class="rounded-md border border-ink-900/10 bg-[linear-gradient(180deg,_rgba(16,36,24,0.98),_rgba(22,57,38,0.96))] p-6 text-white shadow-xl shadow-ink-900/15">
           <p class="text-sm uppercase tracking-[0.22em] text-brand-100/80">Resumo do perfil</p>
           <h2 class="mt-3 text-2xl font-semibold">{{ authStore.user?.name }} {{ authStore.user?.lastname }}</h2>
           <p class="mt-3 text-sm leading-6 text-white/70">
@@ -160,11 +204,21 @@ async function handleSubmit() {
           </p>
 
           <div class="mt-8 space-y-3">
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="flex items-center gap-4 rounded-md border border-white/10 bg-white/5 p-4">
+              <div class="flex size-14 shrink-0 items-center justify-center overflow-hidden rounded-md bg-white/10 text-lg font-semibold text-white">
+                <img v-if="profilePhotoUrl" :src="profilePhotoUrl" alt="Foto do perfil" class="h-full w-full object-cover" />
+                <span v-else>{{ profileInitials }}</span>
+              </div>
+              <div>
+                <p class="text-sm text-white/60">Foto</p>
+                <p class="mt-1 text-sm font-medium">{{ authStore.user?.photoUrl ? 'Sincronizada' : 'Nao enviada' }}</p>
+              </div>
+            </div>
+            <div class="rounded-md border border-white/10 bg-white/5 p-4">
               <p class="text-sm text-white/60">Username</p>
               <p class="mt-1 font-medium">{{ authStore.user?.username }}</p>
             </div>
-            <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+            <div class="rounded-md border border-white/10 bg-white/5 p-4">
               <p class="text-sm text-white/60">E-mail</p>
               <p class="mt-1 font-medium">{{ authStore.user?.email }}</p>
             </div>

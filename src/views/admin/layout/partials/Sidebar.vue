@@ -192,7 +192,7 @@ async function handleLogout() {
 
       <button
         type="button"
-        class="inline-flex size-10 items-center justify-center rounded-2xl border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
+        class="inline-flex size-10 items-center justify-center rounded-md border border-white/10 bg-white/5 text-white transition hover:bg-white/10 lg:hidden"
         aria-label="Fechar menu lateral"
         @click="emit('close')"
       >
@@ -208,7 +208,7 @@ async function handleLogout() {
           v-for="item in visibleNavigationItems"
           :key="item.name"
           :to="{ name: item.name }"
-          class="group block rounded-2xl border px-4 py-3 transition"
+          class="group block rounded-md border px-4 py-3 transition"
           :class="isActiveRoute(item.name)
             ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
             : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
@@ -217,7 +217,7 @@ async function handleLogout() {
           <div class="flex items-center justify-between gap-3">
             <div class="flex min-w-0 items-center gap-3">
               <span
-                class="flex size-9 shrink-0 items-center justify-center rounded-xl"
+                class="flex size-9 shrink-0 items-center justify-center rounded-md"
                 :class="isActiveRoute(item.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
               >
                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -235,7 +235,7 @@ async function handleLogout() {
           v-for="itemSet in visibleNavigationSetting"
           :key="itemSet.name"
           :to="{ name: itemSet.name }"
-          class="group block rounded-2xl border px-4 py-3 transition"
+          class="group block rounded-md border px-4 py-3 transition"
           :class="isActiveRoute(itemSet.name)
             ? 'border-white/15 bg-white/10 shadow-lg shadow-black/10'
             : 'border-white/0 bg-transparent hover:border-white/10 hover:bg-white/5'"
@@ -244,7 +244,7 @@ async function handleLogout() {
           <div class="flex items-center justify-between gap-3">
             <div class="flex min-w-0 items-center gap-3">
               <span
-                class="flex size-9 shrink-0 items-center justify-center rounded-xl"
+                class="flex size-9 shrink-0 items-center justify-center rounded-md"
                 :class="isActiveRoute(itemSet.name) ? 'bg-white/15 text-white' : 'bg-white/8 text-white/70 group-hover:text-white'"
               >
                 <svg class="size-5" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
@@ -261,7 +261,7 @@ async function handleLogout() {
     <div class="shrink-0 border-t-2 border-white/10 pt-4">
       <button
         type="button"
-        class="inline-flex w-full items-center justify-center rounded-2xl border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
+        class="inline-flex w-full items-center justify-center rounded-md border border-white/10 bg-white/8 px-4 py-3 text-sm font-semibold text-white transition hover:bg-white/14"
         @click="handleLogout"
       >
         Encerrar sessao

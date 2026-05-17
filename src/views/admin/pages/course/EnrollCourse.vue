@@ -12,6 +12,7 @@ const rolesStore = useRolesStore()
 const errorMessage = ref('')
 const isSubmitting = ref(false)
 const approvingEnrollmentId = ref<number | null>(null)
+const updatingPaymentIds = ref(new Set<number>())
 
 const form = reactive({
   userId: '',
@@ -19,6 +20,13 @@ const form = reactive({
 })
 
 const courseId = computed(() => String(route.params.id))
+const paymentMethodLabels: Record<string, string> = {
+  pix: 'PIX',
+  boleto: 'Boleto',
+  card: 'Cartao',
+  bank_transfer: 'Transferencia bancaria',
+  cash_in_person: 'Dinheiro no local',
+}
 
 const moodleReadyUsers = computed(() =>
   usersStore.items.filter((user) => user.moodleUserId),
@@ -90,6 +98,39 @@ async function approvePayment(enrollmentId: number) {
   }
 }
 
+function enrollmentPaymentStatus(enrollment: typeof coursesStore.enrollments[number]) {
+  if (enrollment.status === 'pending_payment') return 'pending_payment'
+  if (enrollment.paymentMethod || enrollment.amountDue || enrollment.paidAt) return 'paid'
+  return 'manual'
+}
+
+function isUpdatingPayment(enrollmentId: number) {
+  return updatingPaymentIds.value.has(enrollmentId)
+}
+
+function paymentMethodLabel(method?: string | null) {
+  return method ? paymentMethodLabels[method] ?? method : '-'
+}
+
+async function updatePaymentStatus(enrollmentId: number, paymentStatus: 'pending_payment' | 'paid' | 'manual') {
+  if (isUpdatingPayment(enrollmentId)) {
+    return
+  }
+
+  errorMessage.value = ''
+  updatingPaymentIds.value = new Set(updatingPaymentIds.value).add(enrollmentId)
+
+  try {
+    await coursesStore.updateEnrollmentPayment(courseId.value, enrollmentId, paymentStatus)
+  } catch (error) {
+    errorMessage.value = error instanceof Error ? error.message : 'Erro ao atualizar pagamento.'
+  } finally {
+    const nextUpdatingPaymentIds = new Set(updatingPaymentIds.value)
+    nextUpdatingPaymentIds.delete(enrollmentId)
+    updatingPaymentIds.value = nextUpdatingPaymentIds
+  }
+}
+
 onMounted(() => {
   void load()
 })
@@ -97,7 +138,7 @@ onMounted(() => {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Matriculas</p>
@@ -105,18 +146,18 @@ onMounted(() => {
             {{ coursesStore.current?.fullname ?? 'Curso' }}
           </h1>
         </div>
-        <RouterLink :to="{ name: 'courses' }" class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar para cursos</RouterLink>
+        <RouterLink :to="{ name: 'courses' }" class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700">Voltar para cursos</RouterLink>
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-    <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <h2 class="text-xl font-semibold text-slate-900">Adicionar usuario ao curso</h2>
       <div class="mt-5 grid gap-4 md:grid-cols-[1fr_1fr_auto] md:items-end">
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-700">Usuario</label>
-          <select v-model="form.userId" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm">
+          <select v-model="form.userId" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm">
             <option value="">Selecione</option>
             <option v-for="user in moodleReadyUsers" :key="user.id" :value="String(user.id)">
               {{ user.name }} - {{ user.email }}
@@ -125,20 +166,20 @@ onMounted(() => {
         </div>
         <div>
           <label class="mb-2 block text-sm font-medium text-slate-700">Papel no Moodle</label>
-          <select v-model="form.roleId" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm">
+          <select v-model="form.roleId" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm">
             <option value="">Selecione</option>
             <option v-for="role in moodleReadyRoles" :key="role.id" :value="String(role.id)">
               {{ role.name }} ({{ role.moodleRoleId }})
             </option>
           </select>
         </div>
-        <button type="button" class="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white disabled:opacity-70" :disabled="isSubmitting" @click="enroll">
+        <button type="button" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white disabled:opacity-70" :disabled="isSubmitting" @click="enroll">
           {{ isSubmitting ? 'Matriculando...' : 'Matricular' }}
         </button>
       </div>
     </article>
 
-    <article class="overflow-x-auto rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="overflow-x-auto rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <h2 class="mb-5 text-xl font-semibold text-slate-900">Usuarios matriculados</h2>
       <table class="min-w-full divide-y divide-slate-200">
         <thead>
@@ -157,28 +198,39 @@ onMounted(() => {
             <td class="px-4 py-4">{{ enrollment.user.email }}</td>
             <td class="px-4 py-4">{{ enrollment.role.name }}</td>
             <td class="px-4 py-4">
-              <span class="rounded-full px-3 py-1 text-xs font-semibold" :class="enrollment.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
+              <span class="rounded-md px-3 py-1 text-xs font-semibold" :class="enrollment.status === 'active' ? 'bg-emerald-50 text-emerald-700' : 'bg-amber-50 text-amber-700'">
                 {{ enrollment.status === 'active' ? 'Ativa' : 'Pagamento pendente' }}
               </span>
             </td>
             <td class="px-4 py-4">
-              <p class="text-sm">{{ enrollment.paymentMethod || '-' }}</p>
+              <select
+                :value="enrollmentPaymentStatus(enrollment)"
+                class="mb-2 min-w-44 rounded-md border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
+                :disabled="isUpdatingPayment(enrollment.id)"
+                @change="updatePaymentStatus(enrollment.id, ($event.target as HTMLSelectElement).value as 'pending_payment' | 'paid' | 'manual')"
+              >
+                <option value="manual">Liberado manualmente</option>
+                <option value="paid">Pago</option>
+                <option value="pending_payment">Pagamento pendente</option>
+              </select>
+              <p class="text-sm">{{ paymentMethodLabel(enrollment.paymentMethod) }}</p>
               <p v-if="enrollment.amountDue" class="text-xs text-slate-500">{{ Number(enrollment.amountDue).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' }) }}</p>
               <p v-if="enrollment.pixTxid" class="text-xs text-slate-500">PIX {{ enrollment.pixTxid }}</p>
-              <p v-if="enrollment.paidAt" class="text-xs text-emerald-600">Pago em {{ new Date(enrollment.paidAt).toLocaleDateString('pt-BR') }}</p>
+              <p v-if="enrollment.paidAt && (enrollment.paymentMethod || enrollment.amountDue)" class="text-xs text-emerald-600">Pago em {{ new Date(enrollment.paidAt).toLocaleDateString('pt-BR') }}</p>
+              <p v-else-if="enrollment.status === 'active' && !enrollment.paymentMethod && !enrollment.amountDue" class="text-xs text-brand-700">Liberado manualmente</p>
             </td>
             <td class="px-4 py-4 text-right">
               <div class="flex justify-end gap-2">
-                <button v-if="enrollment.status === 'pending_payment'" type="button" class="rounded-xl border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-70" :disabled="approvingEnrollmentId === enrollment.id" @click="approvePayment(enrollment.id)">
+                <button v-if="enrollment.status === 'pending_payment'" type="button" class="rounded-md border border-emerald-200 px-3 py-2 text-sm font-medium text-emerald-700 transition hover:bg-emerald-50 disabled:opacity-70" :disabled="approvingEnrollmentId === enrollment.id" @click="approvePayment(enrollment.id)">
                   {{ approvingEnrollmentId === enrollment.id ? 'Confirmando...' : 'Marcar pago' }}
                 </button>
-                <button type="button" class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" @click="unenroll(enrollment.id)">Remover</button>
+                <button type="button" class="rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50" @click="unenroll(enrollment.id)">Remover</button>
               </div>
             </td>
           </tr>
         </tbody>
       </table>
-      <p v-if="!coursesStore.enrollments.length" class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">Nenhum usuario matriculado.</p>
+      <p v-if="!coursesStore.enrollments.length" class="rounded-md border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center text-sm text-slate-500">Nenhum usuario matriculado.</p>
     </article>
   </section>
 </template>

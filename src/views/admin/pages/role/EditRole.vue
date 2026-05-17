@@ -49,19 +49,19 @@ async function save() {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <h1 class="text-3xl font-semibold tracking-tight text-slate-900">Editar role</h1>
     </header>
-    <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <div class="grid gap-4 sm:grid-cols-2">
-        <input v-model="form.name" placeholder="Nome" class="rounded-xl border-slate-200 px-4 py-3 text-sm" />
-        <input v-model="form.moodleRoleId" placeholder="ID da role no Moodle" class="rounded-xl border-slate-200 px-4 py-3 text-sm" />
-        <textarea v-model="form.description" class="rounded-xl border-slate-200 px-4 py-3 text-sm sm:col-span-2" />
+        <input v-model="form.name" placeholder="Nome" class="rounded-md border-slate-200 px-4 py-3 text-sm" />
+        <input v-model="form.moodleRoleId" placeholder="ID da role no Moodle" class="rounded-md border-slate-200 px-4 py-3 text-sm" />
+        <textarea v-model="form.description" class="rounded-md border-slate-200 px-4 py-3 text-sm sm:col-span-2" />
         <div class="sm:col-span-2">
           <p class="mb-2 text-sm font-medium text-slate-700">Permissoes do sistema</p>
           <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-            <label v-for="permission in permissionsStore.items" :key="permission.id" class="flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
-              <input v-model="form.permissionIds" type="checkbox" :value="permission.id" class="rounded border-slate-300 text-brand-600 focus:ring-brand-500" />
+            <label v-for="permission in permissionsStore.items" :key="permission.id" class="flex items-center gap-2 rounded-md border border-slate-200 bg-white px-3 py-2 text-sm text-slate-700">
+              <input v-model="form.permissionIds" type="checkbox" :value="permission.id" class="rounded-md border-slate-300 text-brand-600 focus:ring-brand-500" />
               {{ permission.name }}
             </label>
           </div>
@@ -69,8 +69,8 @@ async function save() {
       </div>
       <p v-if="errorMessage" class="mt-4 text-sm text-red-600">{{ errorMessage }}</p>
       <div class="mt-6 flex gap-2">
-        <button class="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="save">Salvar</button>
-        <RouterLink :to="{ name: 'roles' }" class="rounded-xl border border-slate-200 px-6 py-3 text-sm">Cancelar</RouterLink>
+        <button class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="save">Salvar</button>
+        <RouterLink :to="{ name: 'roles' }" class="rounded-md border border-slate-200 px-6 py-3 text-sm">Cancelar</RouterLink>
       </div>
     </article>
   </section>

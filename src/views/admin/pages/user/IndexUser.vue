@@ -91,6 +91,13 @@ function isUpdatingStatus(userId: number) {
   return updatingStatusIds.value.has(userId)
 }
 
+function getUserInitials(user: UserRecord) {
+  const name = user.name || user.username || 'U'
+  const lastname = user.lastname || ''
+
+  return `${name.charAt(0)}${lastname.charAt(0)}`.toUpperCase()
+}
+
 async function updateUserStatus(user: UserRecord, suspended: string) {
   if (suspended === user.suspended || isUpdatingStatus(user.id)) {
     return
@@ -119,7 +126,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Usuarios</p>
@@ -132,14 +139,14 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
         <div class="flex flex-wrap gap-3">
           <button
             type="button"
-            class="inline-flex items-center justify-center rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700"
+            class="inline-flex items-center justify-center rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:border-brand-200 hover:text-brand-700"
             @click="loadUsers"
           >
             Atualizar lista
           </button>
           <RouterLink
             :to="{ name: 'users-create' }"
-            class="inline-flex items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700"
+            class="inline-flex items-center justify-center rounded-md bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700"
           >
             Novo usuario
           </RouterLink>
@@ -147,11 +154,11 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
       {{ errorMessage }}
     </p>
 
-    <section class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <section class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <div class="mb-6 flex flex-col gap-4 xl:flex-row xl:items-end xl:justify-between">
         <div>
           <h2 class="text-xl font-semibold text-slate-900">Usuarios cadastrados</h2>
@@ -166,7 +173,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
               v-model="searchTerm"
               type="search"
               placeholder="Pesquisar por username, nome ou e-mail"
-              class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 pr-11 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+              class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 pr-11 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
             />
             <svg
               class="pointer-events-none absolute right-4 top-1/2 size-4 -translate-y-1/2 text-slate-400"
@@ -192,7 +199,6 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
           <thead>
             <tr class="text-left text-xs uppercase tracking-[0.18em] text-slate-400">
               <th class="px-4 py-3 font-semibold">Usuario</th>
-              <th class="px-4 py-3 font-semibold">Nome</th>
               <th class="px-4 py-3 font-semibold">E-mail</th>
               <th class="px-4 py-3 font-semibold">Role</th>
               <th class="px-4 py-3 font-semibold">Status</th>
@@ -201,15 +207,30 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
           </thead>
           <tbody class="divide-y divide-slate-100">
             <tr v-for="item in paginatedUsers" :key="item.id" class="text-sm text-slate-700">
-              <td class="px-4 py-4 font-medium text-slate-900">{{ item.username }}</td>
-              <td class="px-4 py-4">{{ item.name }} {{ item.lastname }}</td>
+              <td class="px-4 py-4">
+                <div class="flex items-center gap-3">
+                  <div class="flex size-12 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-brand-50 text-sm font-semibold text-brand-700">
+                    <img
+                      v-if="item.photoUrl"
+                      :src="item.photoUrl"
+                      :alt="`Foto de ${item.name || item.username}`"
+                      class="h-full w-full object-cover"
+                    />
+                    <span v-else>{{ getUserInitials(item) }}</span>
+                  </div>
+                  <div class="min-w-0">
+                    <p class="font-medium text-slate-900">{{ item.username }}</p>
+                    <p class="mt-1 truncate text-sm text-slate-500">{{ item.name }} {{ item.lastname }}</p>
+                  </div>
+                </div>
+              </td>
               <td class="px-4 py-4">{{ item.email }}</td>
               <td class="px-4 py-4">{{ item.role?.name ?? '-' }}</td>
               <td class="px-4 py-4">
                 <select
                   v-if="authStore.isMaster"
                   :value="item.suspended"
-                  class="min-w-32 rounded-xl border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
+                  class="min-w-32 rounded-md border-slate-200 bg-white px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm focus:border-brand-500 focus:ring-brand-500 disabled:cursor-not-allowed disabled:opacity-60"
                   :disabled="isUpdatingStatus(item.id)"
                   @change="updateUserStatus(item, ($event.target as HTMLSelectElement).value)"
                 >
@@ -218,7 +239,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
                 </select>
                 <span
                   v-else
-                  class="rounded-full px-3 py-1 text-xs font-semibold"
+                  class="rounded-md px-3 py-1 text-xs font-semibold"
                   :class="item.suspended === '1' ? 'bg-amber-50 text-amber-700' : 'bg-emerald-50 text-emerald-700'"
                 >
                   {{ item.suspended === '1' ? 'Suspenso' : 'Ativo' }}
@@ -228,13 +249,13 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
                 <div class="flex justify-end gap-2">
                   <RouterLink
                     :to="{ name: 'users-edit', params: { id: item.id } }"
-                    class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700"
+                    class="rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700"
                   >
                     Editar
                   </RouterLink>
                   <RouterLink
                     :to="{ name: 'users-delete', params: { id: item.id } }"
-                    class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
+                    class="rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600 transition hover:bg-red-50"
                   >
                     Excluir
                   </RouterLink>
@@ -252,7 +273,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
           <div class="flex gap-2">
             <button
               type="button"
-              class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+              class="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="currentPage === 1"
               @click="goToPreviousPage"
             >
@@ -260,7 +281,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
             </button>
             <button
               type="button"
-              class="rounded-xl border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
+              class="rounded-md border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:border-brand-200 hover:text-brand-700 disabled:cursor-not-allowed disabled:opacity-50"
               :disabled="currentPage === totalPages"
               @click="goToNextPage"
             >
@@ -270,7 +291,7 @@ async function updateUserStatus(user: UserRecord, suspended: string) {
         </div>
       </div>
 
-      <div v-else class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
+      <div v-else class="rounded-md border border-dashed border-slate-200 bg-slate-50 px-6 py-10 text-center">
         <p class="text-lg font-semibold text-slate-800">Nenhum usuario encontrado</p>
         <p class="mt-2 text-sm text-slate-500">
           {{ searchTerm ? 'Tente ajustar a pesquisa para encontrar outro resultado.' : 'Crie o primeiro registro para comecar o CRUD.' }}

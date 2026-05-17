@@ -31,15 +31,15 @@ async function remove() {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <h1 class="text-3xl font-semibold tracking-tight text-slate-900">Excluir role</h1>
     </header>
-    <article class="rounded-[2rem] border border-red-200 bg-white/90 p-6 shadow-lg shadow-red-900/5 backdrop-blur">
+    <article class="rounded-md border border-red-200 bg-white/90 p-6 shadow-lg shadow-red-900/5 backdrop-blur">
       <p>Deseja excluir <strong>{{ name }}</strong>?</p>
       <p v-if="errorMessage" class="mt-4 text-sm text-red-600">{{ errorMessage }}</p>
       <div class="mt-6 flex gap-2">
-        <button class="rounded-xl bg-red-600 px-6 py-3 text-sm font-semibold text-white" @click="remove">Excluir</button>
-        <RouterLink :to="{ name: 'roles' }" class="rounded-xl border border-slate-200 px-6 py-3 text-sm">Cancelar</RouterLink>
+        <button class="rounded-md bg-red-600 px-6 py-3 text-sm font-semibold text-white" @click="remove">Excluir</button>
+        <RouterLink :to="{ name: 'roles' }" class="rounded-md border border-slate-200 px-6 py-3 text-sm">Cancelar</RouterLink>
       </div>
     </article>
   </section>

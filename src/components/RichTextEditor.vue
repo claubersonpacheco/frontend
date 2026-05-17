@@ -73,9 +73,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-  <div class="sm:col-span-2 overflow-hidden rounded-2xl border border-slate-200 bg-white">
+  <div class="sm:col-span-2 overflow-hidden rounded-md border border-slate-200 bg-white">
     <div class="flex justify-end border-b border-slate-100 bg-slate-50 px-3 py-2">
-      <button type="button" class="rounded-lg px-3 py-2 text-sm font-medium text-brand-700 hover:bg-white" @click="isPreview = !isPreview">
+      <button type="button" class="rounded-md px-3 py-2 text-sm font-medium text-brand-700 hover:bg-white" @click="isPreview = !isPreview">
         {{ isPreview ? 'Editar' : 'Preview' }}
       </button>
     </div>

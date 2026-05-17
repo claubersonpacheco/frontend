@@ -49,10 +49,10 @@ async function handleSubmit() {
   <main class="relative flex min-h-screen items-center justify-center overflow-hidden px-4 py-10 sm:px-6 lg:px-8">
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_top,_rgba(31,157,85,0.2),_transparent_28%),linear-gradient(135deg,_rgba(255,255,255,0.96),_rgba(239,247,242,0.94))]"></div>
 
-    <section class="relative grid w-full max-w-6xl overflow-hidden rounded-[2rem] border border-white/70 bg-white/80 shadow-2xl shadow-brand-900/10 backdrop-blur xl:grid-cols-[1.1fr_0.9fr]">
+    <section class="relative grid w-full max-w-6xl overflow-hidden rounded-md border border-white/70 bg-white/80 shadow-2xl shadow-brand-900/10 backdrop-blur xl:grid-cols-[1.1fr_0.9fr]">
       <div class="hidden bg-[linear-gradient(160deg,_#143b27,_#1f9d55_62%,_#b9efcb)] p-10 text-white xl:flex xl:flex-col xl:justify-between">
         <div class="space-y-6">
-          <span class="inline-flex w-fit rounded-full border border-white/20 bg-white/10 px-4 py-1 text-sm font-semibold tracking-[0.2em] uppercase">
+          <span class="inline-flex w-fit rounded-md border border-white/20 bg-white/10 px-4 py-1 text-sm font-semibold tracking-[0.2em] uppercase">
             Instituto de Inteligência
           </span>
           <div class="space-y-4">
@@ -66,15 +66,15 @@ async function handleSubmit() {
         </div>
 
         <div class="grid grid-cols-3 gap-4">
-          <div class="rounded-2xl border border-white/15 bg-white/10 p-4">
+          <div class="rounded-md border border-white/15 bg-white/10 p-4">
             <p class="text-3xl font-semibold">8</p>
             <p class="mt-1 text-sm text-white/75">aulas recentes</p>
           </div>
-          <div class="rounded-2xl border border-white/15 bg-white/10 p-4">
+          <div class="rounded-md border border-white/15 bg-white/10 p-4">
             <p class="text-3xl font-semibold">73%</p>
             <p class="mt-1 text-sm text-white/75">progresso</p>
           </div>
-          <div class="rounded-2xl border border-white/15 bg-white/10 p-4">
+          <div class="rounded-md border border-white/15 bg-white/10 p-4">
             <p class="text-3xl font-semibold">3</p>
             <p class="mt-1 text-sm text-white/75">avisos novos</p>
           </div>
@@ -84,7 +84,7 @@ async function handleSubmit() {
       <div class="p-6 sm:p-10 lg:p-12">
         <div class="mx-auto flex max-w-md flex-col justify-center">
           <div class="mb-10 space-y-3">
-            <span class="inline-flex w-fit rounded-full bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
+            <span class="inline-flex w-fit rounded-md bg-brand-50 px-3 py-1 text-sm font-semibold text-brand-700">
               Acesso seguro
             </span>
             <h2 class="text-3xl font-semibold tracking-tight text-slate-900">Entrar</h2>
@@ -102,7 +102,7 @@ async function handleSubmit() {
                 type="text"
                 autocomplete="username"
                 placeholder="seu.usuario ou voce@instituto.com"
-                class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
               />
             </div>
 
@@ -123,7 +123,7 @@ async function handleSubmit() {
                   :type="showPassword ? 'text' : 'password'"
                   autocomplete="current-password"
                   placeholder="Digite sua senha"
-                  class="block w-full rounded-xl border-slate-200 bg-white/90 px-4 py-3 pr-12 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
+                  class="block w-full rounded-md border-slate-200 bg-white/90 px-4 py-3 pr-12 text-sm text-slate-900 shadow-sm focus:border-brand-500 focus:ring-brand-500"
                 />
                 <button
                   type="button"
@@ -166,13 +166,13 @@ async function handleSubmit() {
               </div>
             </div>
 
-            <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+            <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
               {{ errorMessage }}
             </p>
 
             <button
               type="submit"
-              class="inline-flex w-full items-center justify-center rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-70"
+              class="inline-flex w-full items-center justify-center rounded-md bg-brand-600 px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-brand-600/20 transition hover:bg-brand-700 focus:outline-hidden focus:ring-2 focus:ring-brand-500 focus:ring-offset-2 disabled:opacity-70"
               :disabled="isSubmitting"
             >
               {{ isSubmitting ? 'Entrando...' : 'Entrar no sistema' }}

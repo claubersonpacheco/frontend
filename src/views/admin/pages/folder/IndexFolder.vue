@@ -34,7 +34,7 @@ onMounted(() => {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-wrap items-center justify-between gap-3">
         <div>
           <p class="text-sm font-medium uppercase tracking-[0.22em] text-brand-700">Folders</p>
@@ -43,15 +43,15 @@ onMounted(() => {
       </div>
     </header>
 
-    <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <div class="flex flex-col gap-3 sm:flex-row">
-        <input v-model="form.name" type="text" placeholder="Nome da pasta" class="block w-full rounded-xl border-slate-200 px-4 py-3 text-sm" />
-        <button type="button" class="rounded-xl bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="createFolder">Criar pasta</button>
+        <input v-model="form.name" type="text" placeholder="Nome da pasta" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
+        <button type="button" class="rounded-md bg-brand-600 px-6 py-3 text-sm font-semibold text-white" @click="createFolder">Criar pasta</button>
       </div>
-      <p v-if="errorMessage" class="mt-4 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="mt-4 rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
     </article>
 
-    <article class="rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <div class="overflow-x-auto">
         <table class="min-w-full divide-y divide-slate-200">
           <thead>
@@ -67,8 +67,8 @@ onMounted(() => {
               <td class="px-4 py-4 font-medium text-slate-900">{{ item.name }}</td>
               <td class="px-4 py-4">
                 <div class="flex justify-end gap-2">
-                  <RouterLink :to="{ name: 'folders-edit', params: { id: item.id } }" class="rounded-xl border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">Editar</RouterLink>
-                  <RouterLink :to="{ name: 'folders-delete', params: { id: item.id } }" class="rounded-xl border border-red-200 px-3 py-2 text-sm font-medium text-red-600">Excluir</RouterLink>
+                  <RouterLink :to="{ name: 'folders-edit', params: { id: item.id } }" class="rounded-md border border-slate-200 px-3 py-2 text-sm font-medium text-slate-700">Editar</RouterLink>
+                  <RouterLink :to="{ name: 'folders-delete', params: { id: item.id } }" class="rounded-md border border-red-200 px-3 py-2 text-sm font-medium text-red-600">Excluir</RouterLink>
                 </div>
               </td>
             </tr>

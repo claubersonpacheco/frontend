@@ -22,16 +22,16 @@ onMounted(() => {
 
 <template>
   <section class="space-y-6">
-    <header class="rounded-[2rem] border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
+    <header class="rounded-md border border-white/70 bg-white/85 p-6 shadow-xl shadow-slate-900/5 backdrop-blur">
       <div class="flex items-center justify-between gap-3">
         <h1 class="text-3xl font-semibold tracking-tight text-slate-900">Permissoes</h1>
-        <RouterLink :to="{ name: 'permissions-create' }" class="rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white">Nova permissao</RouterLink>
+        <RouterLink :to="{ name: 'permissions-create' }" class="rounded-md bg-brand-600 px-4 py-3 text-sm font-semibold text-white">Nova permissao</RouterLink>
       </div>
     </header>
 
-    <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+    <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-    <article class="overflow-x-auto rounded-[2rem] border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
+    <article class="overflow-x-auto rounded-md border border-white/70 bg-white/90 p-6 shadow-lg shadow-slate-900/5 backdrop-blur">
       <table class="min-w-full divide-y divide-slate-200">
         <thead>
           <tr class="text-left text-xs uppercase tracking-[0.18em] text-slate-400">
@@ -48,8 +48,8 @@ onMounted(() => {
             <td class="px-4 py-4">{{ item.description || '-' }}</td>
             <td class="px-4 py-4">
               <div class="flex justify-end gap-2">
-                <RouterLink :to="{ name: 'permissions-edit', params: { id: item.id } }" class="rounded-xl border border-slate-200 px-3 py-2">Editar</RouterLink>
-                <RouterLink :to="{ name: 'permissions-delete', params: { id: item.id } }" class="rounded-xl border border-red-200 px-3 py-2 text-red-600">Excluir</RouterLink>
+                <RouterLink :to="{ name: 'permissions-edit', params: { id: item.id } }" class="rounded-md border border-slate-200 px-3 py-2">Editar</RouterLink>
+                <RouterLink :to="{ name: 'permissions-delete', params: { id: item.id } }" class="rounded-md border border-red-200 px-3 py-2 text-red-600">Excluir</RouterLink>
               </div>
             </td>
           </tr>

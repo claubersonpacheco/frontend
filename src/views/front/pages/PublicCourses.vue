@@ -46,20 +46,20 @@ onMounted(() => {
           </p>
         </div>
 
-        <RouterLink to="/" class="w-fit rounded-xl border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
+        <RouterLink to="/" class="w-fit rounded-md border border-slate-200 bg-white px-4 py-3 text-sm font-medium text-slate-700">
           Voltar
         </RouterLink>
       </header>
 
-      <p v-if="errorMessage" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
+      <p v-if="errorMessage" class="rounded-md border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">{{ errorMessage }}</p>
 
-      <div v-if="isLoading" class="rounded-[2rem] border border-white bg-white p-8 text-sm text-slate-500 shadow-lg shadow-slate-900/5">
+      <div v-if="isLoading" class="rounded-md border border-white bg-white p-8 text-sm text-slate-500 shadow-lg shadow-slate-900/5">
         Carregando cursos...
       </div>
 
       <div v-else-if="courses.length" class="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
-        <article v-for="course in courses" :key="course.id" class="flex min-h-[260px] flex-col rounded-[2rem] border border-white bg-white p-6 shadow-lg shadow-slate-900/5">
-          <img v-if="course.imageUrl" :src="course.imageUrl" :alt="course.fullname" class="mb-5 h-40 w-full rounded-2xl object-cover" />
+        <article v-for="course in courses" :key="course.id" class="flex min-h-[260px] flex-col rounded-md border border-white bg-white p-6 shadow-lg shadow-slate-900/5">
+          <img v-if="course.imageUrl" :src="course.imageUrl" :alt="course.fullname" class="mb-5 h-40 w-full rounded-md object-cover" />
           <div class="flex-1">
             <p class="text-xs font-semibold uppercase tracking-[0.18em] text-brand-700">{{ course.category?.name || 'Curso' }}</p>
             <h2 class="mt-3 text-2xl font-semibold text-slate-900">{{ course.fullname }}</h2>
@@ -68,15 +68,15 @@ onMounted(() => {
           </div>
 
           <div class="mt-6 flex items-center justify-between gap-3">
-            <span class="rounded-full bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Publico</span>
-            <RouterLink :to="{ name: 'public-course-register', params: { slug: course.shortname } }" class="rounded-xl bg-brand-600 px-4 py-3 text-sm font-semibold text-white">
+            <span class="rounded-md bg-emerald-50 px-3 py-1 text-xs font-semibold text-emerald-700">Publico</span>
+            <RouterLink :to="{ name: 'public-course-register', params: { slug: course.shortname } }" class="rounded-md bg-brand-600 px-4 py-3 text-sm font-semibold text-white">
               Cadastrar
             </RouterLink>
           </div>
         </article>
       </div>
 
-      <div v-else class="rounded-[2rem] border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
+      <div v-else class="rounded-md border border-dashed border-slate-200 bg-white p-10 text-center text-sm text-slate-500">
         Nenhum curso publico disponivel no momento.
       </div>
     </section>
