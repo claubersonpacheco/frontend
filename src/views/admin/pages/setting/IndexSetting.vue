@@ -79,7 +79,7 @@ onMounted(() => {
               <td class="px-4 py-4 font-medium text-slate-900">{{ item.name || '-' }}</td>
               <td class="px-4 py-4">
                 <div class="flex h-12 w-24 items-center justify-center overflow-hidden rounded-md border border-slate-200 bg-white px-2">
-                  <img v-if="item.logo" :src="item.logo" :alt="`Logo de ${item.name || 'setting'}`" class="max-h-full max-w-full object-contain" />
+                  <img v-if="item.logoWhite || item.logo" :src="item.logoWhite || item.logo || ''" :alt="`Logo de ${item.name || 'setting'}`" class="max-h-full max-w-full object-contain" />
                   <span v-else class="text-xs text-slate-400">Sem logo</span>
                 </div>
               </td>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, reactive, ref } from 'vue'
+import { reactive, ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useSettingsStore } from '@/stores/settings'
 
@@ -9,6 +9,9 @@ const settingsStore = useSettingsStore()
 const form = reactive({
   name: '',
   logo: '',
+  logoIcon: '',
+  logoPrint: '',
+  logoWhite: '',
   streamLibraryId: '',
   streamApiKey: '',
   streamUserApiKey: '',
@@ -29,16 +32,24 @@ const form = reactive({
 
 const errorMessage = ref('')
 const isSubmitting = ref(false)
-const selectedLogo = ref<File | null>(null)
-const logoPreview = ref('')
-const logoPreviewUrl = computed(() => logoPreview.value || form.logo)
+const logoFields = [
+  { type: 'icon', model: 'logoIcon', label: 'Logo icon', description: 'Icone quadrado para favicon, atalhos e marcas pequenas.' },
+  { type: 'print', model: 'logoPrint', label: 'Logo impressao', description: 'Versao para documentos, contratos e impressao.' },
+  { type: 'white', model: 'logoWhite', label: 'Logo branca do site', description: 'Versao branca para o sidebar verde e topo do site.' },
+] as const
+const selectedLogos = ref<Partial<Record<(typeof logoFields)[number]['type'], File>>>({})
+const logoPreviews = ref<Partial<Record<(typeof logoFields)[number]['type'], string>>>({})
 
-function handleLogoChange(event: Event) {
+function getLogoPreview(type: (typeof logoFields)[number]['type'], model: (typeof logoFields)[number]['model']) {
+  return logoPreviews.value[type] || form[model]
+}
+
+function handleLogoChange(event: Event, type: (typeof logoFields)[number]['type']) {
   const input = event.target as HTMLInputElement
   const file = input.files?.[0] ?? null
 
-  selectedLogo.value = file
-  logoPreview.value = file ? URL.createObjectURL(file) : ''
+  selectedLogos.value = { ...selectedLogos.value, [type]: file || undefined }
+  logoPreviews.value = { ...logoPreviews.value, [type]: file ? URL.createObjectURL(file) : undefined }
 }
 
 async function handleSubmit() {
@@ -48,9 +59,11 @@ async function handleSubmit() {
   try {
     const setting = await settingsStore.createSetting(form)
 
-    if (selectedLogo.value) {
-      await settingsStore.uploadSettingLogo(setting.id, selectedLogo.value)
-      selectedLogo.value = null
+    for (const logoField of logoFields) {
+      const file = selectedLogos.value[logoField.type]
+      if (file) {
+        await settingsStore.uploadSettingLogo(setting.id, file, logoField.type)
+      }
     }
 
     await router.push({ name: 'settings' })
@@ -86,21 +99,26 @@ async function handleSubmit() {
             <label class="mb-2 block text-sm font-medium text-slate-700">Logo URL</label>
             <input v-model="form.logo" type="text" class="block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
           </div>
-          <div class="sm:col-span-2 grid gap-4 rounded-md border border-slate-100 bg-slate-50 p-4 sm:grid-cols-[180px_1fr] sm:items-center">
+          <div
+            v-for="logoField in logoFields"
+            :key="logoField.type"
+            class="sm:col-span-2 grid gap-4 rounded-md border border-slate-100 bg-slate-50 p-4 sm:grid-cols-[180px_1fr] sm:items-center"
+          >
             <div class="flex h-24 items-center justify-center overflow-hidden rounded-md border border-dashed border-slate-200 bg-white px-4">
-              <img v-if="logoPreviewUrl" :src="logoPreviewUrl" alt="Preview da logo" class="max-h-full max-w-full object-contain" />
+              <img v-if="getLogoPreview(logoField.type, logoField.model)" :src="getLogoPreview(logoField.type, logoField.model)" :alt="`Preview ${logoField.label}`" class="max-h-full max-w-full object-contain" />
               <span v-else class="text-sm text-slate-400">Logo</span>
             </div>
             <div>
-              <label class="mb-2 block text-sm font-medium text-slate-700">Enviar logo para Bunny</label>
+              <label class="mb-2 block text-sm font-medium text-slate-700">{{ logoField.label }}</label>
+              <input v-model="form[logoField.model]" type="text" class="mb-3 block w-full rounded-md border-slate-200 px-4 py-3 text-sm" />
               <input
                 type="file"
                 accept="image/jpeg,image/png,image/webp,image/gif,image/svg+xml"
                 class="block w-full rounded-md border border-slate-200 bg-white px-4 py-3 text-sm"
-                @change="handleLogoChange"
+                @change="handleLogoChange($event, logoField.type)"
               />
               <p class="mt-2 text-xs leading-5 text-slate-500">
-                JPG, PNG, WEBP, GIF ou SVG ate 5MB. O arquivo sera salvo na pasta configurada em Logo Folder.
+                {{ logoField.description }} JPG, PNG, WEBP, GIF ou SVG ate 5MB.
               </p>
             </div>
           </div>

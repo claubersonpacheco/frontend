@@ -127,7 +127,7 @@ const iconPaths = {
 
 const userName = computed(() => authStore.user?.name ?? 'Usuario')
 const activeSetting = computed(() => settingsStore.items.at(-1) ?? null)
-const sidebarLogoUrl = computed(() => activeSetting.value?.logo || '')
+const sidebarLogoUrl = computed(() => activeSetting.value?.logoWhite || activeSetting.value?.logo || '')
 const platformName = computed(() => activeSetting.value?.name || 'Gestao IDI')
 const visibleNavigationItems = computed(() =>
   navigationItems.filter(
@@ -176,12 +176,27 @@ async function handleLogout() {
   await router.push('/auth/login')
 }
 
+function updateFavicon(iconUrl?: string | null) {
+  if (!iconUrl) return
+
+  const existingIcon = document.querySelector<HTMLLinkElement>('link[rel="icon"]')
+  const icon = existingIcon ?? document.createElement('link')
+  icon.rel = 'icon'
+  icon.href = iconUrl
+
+  if (!existingIcon) {
+    document.head.appendChild(icon)
+  }
+}
+
 onMounted(async () => {
   if (!authStore.hasPermission('settings.read') || settingsStore.items.length) {
+    updateFavicon(activeSetting.value?.logoIcon)
     return
   }
 
   await settingsStore.fetchSettings().catch(() => undefined)
+  updateFavicon(activeSetting.value?.logoIcon)
 })
 </script>
 

@@ -9,6 +9,9 @@ export type SettingRecord = {
   id: number
   name: string | null
   logo: string | null
+  logoIcon: string | null
+  logoPrint: string | null
+  logoWhite: string | null
   streamLibraryId: string | null
   streamApiKey: string | null
   streamUserApiKey: string | null
@@ -32,6 +35,9 @@ export type SettingRecord = {
 export type SettingFormPayload = {
   name?: string
   logo?: string
+  logoIcon?: string
+  logoPrint?: string
+  logoWhite?: string
   streamLibraryId?: string
   streamApiKey?: string
   streamUserApiKey?: string
@@ -148,7 +154,7 @@ export const useSettingsStore = defineStore('settings', () => {
     return updatedSetting
   }
 
-  async function uploadSettingLogo(id: number | string, file: File) {
+  async function uploadSettingLogo(id: number | string, file: File, type: 'icon' | 'print' | 'white' = 'white') {
     if (!authStore.accessToken) {
       throw new Error('Sessao expirada. Faca login novamente.')
     }
@@ -156,7 +162,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const formData = new FormData()
     formData.append('logo', file)
 
-    const response = await fetch(`${API_BASE_URL}/settings/${id}/logo`, {
+    const response = await fetch(`${API_BASE_URL}/settings/${id}/logos/${type}`, {
       method: 'POST',
       headers: {
         Authorization: `Bearer ${authStore.accessToken}`,
